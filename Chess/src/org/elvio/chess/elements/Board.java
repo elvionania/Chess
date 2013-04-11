@@ -1,120 +1,205 @@
 package org.elvio.chess.elements;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import org.elvio.chess.util.BoardUtils;
+
 public class Board {
 
-	private Piece[][] board;
+	private byte[] board;
+	private List<Board> boardAEvaluer;
+	private List<Byte> positionsAttaquees;
 	
-	public static final byte[] A1 = {0,0};
-	public static final byte[] A2 = {0,1};
-	public static final byte[] A3 = {0,2};
-	public static final byte[] A4 = {0,3};
-	public static final byte[] A5 = {0,4};
-	public static final byte[] A6 = {0,5};
-	public static final byte[] A7 = {0,6};
-	public static final byte[] A8 = {0,7};
-	public static final byte[] B1 = {1,0};
-	public static final byte[] B2 = {1,1};
-	public static final byte[] B3 = {1,2};
-	public static final byte[] B4 = {1,3};
-	public static final byte[] B5 = {1,4};
-	public static final byte[] B6 = {1,5};
-	public static final byte[] B7 = {1,6};
-	public static final byte[] B8 = {1,7};
-	public static final byte[] C1 = {2,0};
-	public static final byte[] C2 = {2,1};
-	public static final byte[] C3 = {2,2};
-	public static final byte[] C4 = {2,3};
-	public static final byte[] C5 = {2,4};
-	public static final byte[] C6 = {2,5};
-	public static final byte[] C7 = {2,6};
-	public static final byte[] C8 = {2,7};
-	public static final byte[] D1 = {3,0};
-	public static final byte[] D2 = {3,1};
-	public static final byte[] D3 = {3,2};
-	public static final byte[] D4 = {3,3};
-	public static final byte[] D5 = {3,4};
-	public static final byte[] D6 = {3,5};
-	public static final byte[] D7 = {3,6};
-	public static final byte[] D8 = {3,7};
-	public static final byte[] E1 = {4,0};
-	public static final byte[] E2 = {4,1};
-	public static final byte[] E3 = {4,2};
-	public static final byte[] E4 = {4,3};
-	public static final byte[] E5 = {4,4};
-	public static final byte[] E6 = {4,5};
-	public static final byte[] E7 = {4,6};
-	public static final byte[] E8 = {4,7};
-	public static final byte[] F1 = {5,0};
-	public static final byte[] F2 = {5,1};
-	public static final byte[] F3 = {5,2};
-	public static final byte[] F4 = {5,3};
-	public static final byte[] F5 = {5,4};
-	public static final byte[] F6 = {5,5};
-	public static final byte[] F7 = {5,6};
-	public static final byte[] F8 = {5,7};
-	public static final byte[] G1 = {6,0};
-	public static final byte[] G2 = {6,1};
-	public static final byte[] G3 = {6,2};
-	public static final byte[] G4 = {6,3};
-	public static final byte[] G5 = {6,4};
-	public static final byte[] G6 = {6,5};
-	public static final byte[] G7 = {6,6};
-	public static final byte[] G8 = {6,7};
-	public static final byte[] H1 = {7,0};
-	public static final byte[] H2 = {7,1};
-	public static final byte[] H3 = {7,2};
-	public static final byte[] H4 = {7,3};
-	public static final byte[] H5 = {7,4};
-	public static final byte[] H6 = {7,5};
-	public static final byte[] H7 = {7,6};
-	public static final byte[] H8 = {7,7};
+	private Board premierParent = null;
 	
-	public Board(){		
+	public Board(){
+		board = new byte[64];
 	}
 	
 	public void initialisation(){
-		board = new Piece[8][8];
-		miseEnPlaceDesPieces();
+		for(byte i = 0 ; i < 64 ; i++){
+			board[i] = 0;
+		}
+		BoardUtils.miseEnPlaceDesPieces(this);
 	}
 
-	private void miseEnPlaceDesPieces() {
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), A2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), B2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), C2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), D2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), E2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), F2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), G2);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.BLANC), H2);
-		positionnerUnePieceSurLEchiquier(new Tour(Piece.BLANC), A1);
-		positionnerUnePieceSurLEchiquier(new Tour(Piece.BLANC), H1);
-		positionnerUnePieceSurLEchiquier(new Cavalier(Piece.BLANC), B1);
-		positionnerUnePieceSurLEchiquier(new Cavalier(Piece.BLANC), G1);
-		positionnerUnePieceSurLEchiquier(new Fou(Piece.BLANC), C1);
-		positionnerUnePieceSurLEchiquier(new Fou(Piece.BLANC), F1);
-		positionnerUnePieceSurLEchiquier(new Dame(Piece.BLANC), D1);
-		positionnerUnePieceSurLEchiquier(new Roi(Piece.BLANC), E1);
+	public final void put(Byte position, Byte etat){
+		if(etat == null){
+			board[position] = 0;
+		}else{
+			board[position] = etat;
+		}
+	}
+	
+	public final Byte get(Byte position){
+		if(position == null){
+			return null;
+		}
+		if(board[position] == 0){
+			return null;
+		}
+		return board[position];		
+	}
+	
+	public final Byte get2(int position){
+		if(board[position] == 0){
+			return null;
+		}
+		return board[position];		
+	}
+	
+	public final void remove(Byte position){
+		board[position] = 0;
+	}
 		
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), A7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), B7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), C7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), D7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), E7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), F7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), G7);
-		positionnerUnePieceSurLEchiquier(new Pion(Piece.NOIR), H7);
-		positionnerUnePieceSurLEchiquier(new Tour(Piece.NOIR), A8);
-		positionnerUnePieceSurLEchiquier(new Tour(Piece.NOIR), H8);
-		positionnerUnePieceSurLEchiquier(new Cavalier(Piece.NOIR), B8);
-		positionnerUnePieceSurLEchiquier(new Cavalier(Piece.NOIR), G8);
-		positionnerUnePieceSurLEchiquier(new Fou(Piece.NOIR), C8);
-		positionnerUnePieceSurLEchiquier(new Fou(Piece.NOIR), F8);
-		positionnerUnePieceSurLEchiquier(new Dame(Piece.NOIR), D8);
-		positionnerUnePieceSurLEchiquier(new Roi(Piece.NOIR), E8);
+	public final Collection<Byte> getPieces(){
+		ArrayList<Byte> liste = new ArrayList<>();
+		for(Byte piece : board){
+			if(piece != 0){
+				liste.add(piece);
+			}
+		}
+		return liste;
+	}
+	
+	public final boolean isEnFinale(){
+		
+		byte damev = Dame.getValueStatic();
+		byte tourv = Tour.getValueStatic();
+		byte fouv = Fou.getValueStatic();
+		byte cavalierv = Cavalier.getValueStatic();
+		
+		boolean dame = false;
+		boolean tour = false;
+		boolean cavalier = false; 
+		boolean fou = false;
+		
+		for(byte piece : board){
+			if(Piece.isComme(piece, damev)){
+				dame = true;
+			}else if(Piece.isComme(piece, tourv)){
+				tour = true;
+			}else if(Piece.isComme(piece, fouv)){
+				fou = true;
+			}else if(Piece.isComme(piece, cavalierv)){
+				cavalier = true;
+			}
+		}
+		return (dame && cavalier && !fou && !tour)||(dame && !cavalier && fou && !tour)||(!dame);
+	}
+	
+	public final Collection<Byte> getPositions(){
+		ArrayList<Byte> liste = new ArrayList<>();
+		for(byte i = 0 ; i < BoardUtils.NBRE_CASES_BOARD ; i++){
+			if(board[i] != 0){
+				liste.add(i);
+			}
+		}
+		return liste;
+	}
+	
+	public final void reInitBoardAVisualiser() {
+		boardAEvaluer = new ArrayList<>();
 	}
 
-	private void positionnerUnePieceSurLEchiquier(Piece piece, byte[] position) {
-		board[position[0]][position[1]] = piece;
+	public Board getPremierParent() {
+			return premierParent;
+	}
+
+	public void setPremierParent(Board premierParent) {
+			this.premierParent = premierParent;
+	}
+	
+	public void setPremierParentPremiereFois(Board parent) {
+		if(parent.getPremierParent() == null){
+			this.premierParent = this.cloneSansParent();
+		}else{
+			this.premierParent = parent.getPremierParent().cloneSansParent();
+		}
+	}
+
+	public List<Board> getBoardAEvaluer() {
+		return boardAEvaluer;
+	}
+
+	public void setBoardAEvaluer(List<Board> boardAEvaluer) {
+		this.boardAEvaluer = boardAEvaluer;
+	}
+
+	public void addBoards(List<Board> boards) {
+		if(boardAEvaluer == null){
+			boardAEvaluer = new ArrayList<>();
+		}
+		boardAEvaluer.addAll(boards);		
+	}
+
+	public int getBoardSize() {
+		return getPieces().size();
+	}
+	
+	public final Board clone(){
+		Board clone = new Board();
+		clone.board = this.board.clone();
+		if(this.getPremierParent() != null){
+			clone.setPremierParent(this.getPremierParent().cloneSansParent());
+		}
+		return clone;
+	}
+
+	private final Board cloneSansParent() {
+		Board clone = new Board();
+		clone.board = this.board.clone();
+		return clone;
+	}
+	
+	public String toString(){
+		return Arrays.toString(board);
+	}
+	
+	public List<Byte> getPositionsAttaquees() {
+		return positionsAttaquees;
+	}
+
+	public void setPositionsAttaquees(List<Byte> positionsAttaquees) {
+		this.positionsAttaquees = positionsAttaquees;
+	}
+
+	public long[] toLong(){
+		long[] resultat = new long[5];
+		long piece1 = 0;
+		long piece2 = 0;
+		int correcteur2 = 16; 
+		long piece3 = 0;
+		int correcteur3 = 32; 
+		long piece4 = 0;
+		int correcteur4 = 48; 
+		long positions = 0;
+		
+		for(int position = 0 ; position < 64 ; position++){
+			if(board[position] != 0){
+				if(position < 16){
+					piece1 += ((1 << position) * board[position]); 
+				}else if (position > 15 && position <32){
+					piece2 += ((1 << (position-correcteur2)) * board[position]);
+				}else if (position > 31 && position < 48){
+					piece3 += ((1 << (position-correcteur3)) * board[position]);
+				}else{
+					piece4 += ((1 << (position-correcteur4)) * board[position]);
+				}
+				positions += (1 << position);
+			}
+		}
+		
+		resultat[0] = piece1;
+		resultat[1] = piece2;
+		resultat[2] = piece3;
+		resultat[3] = piece4;
+		resultat[4] = positions;
+		
+		return resultat;
 	}
 	
 }
