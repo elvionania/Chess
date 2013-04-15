@@ -127,20 +127,11 @@ public class BoardUtils {
 	}
 	
 	public final static void miseEnPlaceDesPiecesTest(Board board) {
-		board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.B2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.D4, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.E2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.F2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.G2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.H2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.A1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
-		board.put(BoardUtils.H1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
-		board.put(BoardUtils.F4, Piece.creation(Piece.BLANC, Cavalier.getValueStatic()));
-		board.put(BoardUtils.G1, Piece.creation(Piece.BLANC, Cavalier.getValueStatic()));
-		board.put(BoardUtils.C1, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
-		board.put(BoardUtils.F1, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
-		board.put(BoardUtils.D1, Piece.creation(Piece.BLANC, Dame.getValueStatic()));
 		board.put(BoardUtils.E1, Piece.creation(Piece.BLANC, Roi.getValueStatic()));
 		
 		board.put(BoardUtils.A7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
@@ -151,13 +142,6 @@ public class BoardUtils {
 		board.put(BoardUtils.F7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
 		board.put(BoardUtils.G7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
 		board.put(BoardUtils.H7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.A8, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
-		board.put(BoardUtils.H8, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
-		board.put(BoardUtils.C6, Piece.creation(Piece.NOIR, Cavalier.getValueStatic()));
-		board.put(BoardUtils.G8, Piece.creation(Piece.NOIR, Cavalier.getValueStatic()));
-		board.put(BoardUtils.C8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
-		board.put(BoardUtils.C3, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
-		board.put(BoardUtils.F6, Piece.creation(Piece.NOIR, Dame.getValueStatic()));
 		board.put(BoardUtils.E8, Piece.creation(Piece.NOIR, Roi.getValueStatic()));
 	}
 	

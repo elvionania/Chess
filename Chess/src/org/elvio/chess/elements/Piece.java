@@ -17,6 +17,10 @@ public abstract class Piece {
 	public static final byte M_UN = -1;
 	public static final byte M_DEUX = -2;
 	public static final byte ZERO = 0;
+	public static final byte SEPT = 7;
+	public static final byte HUIT = 8;
+	public static final byte TROIS = 3;
+	public static final byte CINQUANTE_SIX = 56;
 	
 	protected static Byte value = (new Integer(Integer.parseInt(valeurBinaire,2))).byteValue();
 	

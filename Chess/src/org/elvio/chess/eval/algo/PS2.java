@@ -11,11 +11,6 @@ import org.elvio.chess.util.BoardUtils;
 
 public class PS2  implements FonctionEvaluation {
 	
-	private static boolean[] pionB = new boolean[8];
-	private static int[] pionBp = new int[8];
-	private static boolean[] pionN = new boolean[8];
-	private static int[] pionNp = new int[8];
-	
 	private final static int[] valeursPionsBlancs = {	100,105,105,100,105,110,150,100,
 														100,110,95,100,105,110,150,100,
 														100,110,90,100,110,120,150,100,
@@ -129,24 +124,78 @@ public class PS2  implements FonctionEvaluation {
 														-999970,-999970,-999990,-999990,-999990,-999990,-999980,-999960,
 														-999950,-999970,-999970,-999970,-999970,-999970,-999970,-999950};
 	
+	private final static long[] cases = {1l<<0,1l<<1,1l<<2,1l<<3,1l<<4,1l<<5,1l<<6,1l<<7,
+											1l<<8,1l<<9,1l<<10,1l<<11,1l<<12,1l<<13,1l<<14,1l<<15,
+											1l<<16,1l<<17,1l<<18,1l<<19,1l<<20,1l<<21,1l<<22,1l<<23,
+											1l<<24,1l<<25,1l<<26,1l<<27,1l<<28,1l<<29,1l<<30,1l<<31,
+											1l<<32,1l<<33,1l<<34,1l<<35,1l<<36,1l<<37,1l<<38,1l<<39,
+											1l<<40,1l<<41,1l<<42,1l<<43,1l<<44,1l<<45,1l<<46,1l<<47,
+											1l<<48,1l<<49,1l<<50,1l<<51,1l<<52,1l<<53,1l<<54,1l<<55,
+											1l<<56,1l<<57,1l<<58,1l<<59,1l<<60,1l<<61,1l<<62,1l<<63};
+	
+	private final static long[] casesM8 = { 0l,0l,0l,0l,0l,0l,0l,0l,
+											1l<<0,1l<<1,1l<<2,1l<<3,1l<<4,1l<<5,1l<<6,1l<<7,
+											1l<<8,1l<<9,1l<<10,1l<<11,1l<<12,1l<<13,1l<<14,1l<<15,
+											1l<<16,1l<<17,1l<<18,1l<<19,1l<<20,1l<<21,1l<<22,1l<<23,
+											1l<<24,1l<<25,1l<<26,1l<<27,1l<<28,1l<<29,1l<<30,1l<<31,
+											1l<<32,1l<<33,1l<<34,1l<<35,1l<<36,1l<<37,1l<<38,1l<<39,
+											1l<<40,1l<<41,1l<<42,1l<<43,1l<<44,1l<<45,1l<<46,1l<<47,
+											1l<<48,1l<<49,1l<<50,1l<<51,1l<<52,1l<<53,1l<<54,1l<<55};
+	
+	private final static long[] casesP8 = {	1l<<8,1l<<9,1l<<10,1l<<11,1l<<12,1l<<13,1l<<14,1l<<15,
+											1l<<16,1l<<17,1l<<18,1l<<19,1l<<20,1l<<21,1l<<22,1l<<23,
+											1l<<24,1l<<25,1l<<26,1l<<27,1l<<28,1l<<29,1l<<30,1l<<31,
+											1l<<32,1l<<33,1l<<34,1l<<35,1l<<36,1l<<37,1l<<38,1l<<39,
+											1l<<40,1l<<41,1l<<42,1l<<43,1l<<44,1l<<45,1l<<46,1l<<47,
+											1l<<48,1l<<49,1l<<50,1l<<51,1l<<52,1l<<53,1l<<54,1l<<55,
+											1l<<56,1l<<57,1l<<58,1l<<59,1l<<60,1l<<61,1l<<62,1l<<63,
+											 0l,0l,0l,0l,0l,0l,0l,0l,};
+	
+	private final static int[] casesCB = {7,7,7,7,7,7,7,7,
+											15,15,15,15,15,15,15,15,
+											23,23,23,23,23,23,23,23,
+											31,31,31,31,31,31,31,31,
+											39,39,39,39,39,39,39,39,
+											47,47,47,47,47,47,47,47,
+											55,55,55,55,55,55,55,55,
+											63,63,63,63,63,63,63,63};
+	
+	private final static int[] casesCN = {0,0,0,0,0,0,0,0,
+											8,8,8,8,8,8,8,8,
+											16,16,16,16,16,16,16,16,
+											24,24,24,24,24,24,24,24,
+											32,32,32,32,32,32,32,32,
+											40,40,40,40,40,40,40,40,
+											48,48,48,48,48,48,48,48,
+											56,56,56,56,56,56,56,56};
+	private final static int[] pasEnAvantBlancPourLInfluence = {};
+	private final static int[] pasEnAvantNoirPourLInfluence = {};
+	
+	private final static int[] poidColonne = {1,9,17,25,33,41,49,57};
+	private final static int[] poidFinColonne = {7,15,23,31,39,47,55,63};
+	
+	private static long masqueBlanc = 0l;
+	private static long masquePositionsSousInfluenceBlanche = 0l;
+	private static long masqueNoir = 0l;
+	private static long masquePositionsSousInfluenceNoire = 0l;
+	private static Byte piece;
+	private static int cb[] = new int[8];
+	private static int cn[] = new int[8];
 	
 	public final double getEval(Board board, int cpt){		
 		int score = 0;
-		Byte piece;
-		int cb[] = new int[8];
-		int cn[] = new int[8];
+		masqueBlanc = 0l;
+		masquePositionsSousInfluenceBlanche = 0l;
+		masqueNoir = 0l;
+		masquePositionsSousInfluenceNoire = 0l;
 			
-		for(byte position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
-			if((piece = board.get(position)) != null){
+		for(int position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
+			if((piece = board.get2(position)) != null){
 				score += getEval(piece, position, cpt, cb, cn);
 			}
 		}
 		
-		for(int i = 0 ; i < 8 ; i++){
-			if(cb[i]>1) score -= 50;
-			if(cn[i]>1) score += 50f;
-		}
-		
+		score += evalPionPasse(board);
 		
 		return score;
 	}
@@ -219,96 +268,74 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 
+	
 	private final static int evalPion(int position, byte piece, int[] cb, int[] cn) {
 		if(Piece.isBlanc(piece)){
-			cb[position/8]++;
+			
+			masqueBlanc |= cases[position];
+			for(int position2 = position+1 ; position2 < casesCB[position] ; position2++){
+				masquePositionsSousInfluenceBlanche |= casesP8[position2];
+				masquePositionsSousInfluenceBlanche |= cases[position2];
+				masquePositionsSousInfluenceBlanche |= casesM8[position2];
+			}
+			
 			return valeursPionsBlancs[position];
 		}else{
-			cn[position/8]++;
+			
+			masqueNoir |= cases[position];
+			for(int position2 = position-1 ; position2 > casesCN[position] ; position2--){
+				masquePositionsSousInfluenceNoire |= casesP8[position2];
+				masquePositionsSousInfluenceNoire |= cases[position2];
+				masquePositionsSousInfluenceNoire |= casesM8[position2];
+			}
+			
 			return valeursPionsNoirs[position];
 		}
 	}
 	
-	private final static int evalPionPasse(Board board){
-		int score = 0;
-		score += evalPionPassePourUneColonne(board, 0);
-		score += evalPionPassePourUneColonne(board, 1);
-		score += evalPionPassePourUneColonne(board, 2);
-		score += evalPionPassePourUneColonne(board, 3);
-		score += evalPionPassePourUneColonne(board, 4);
-		score += evalPionPassePourUneColonne(board, 5);
-		score += evalPionPassePourUneColonne(board, 6);
-		score += evalPionPassePourUneColonne(board, 7);
-		if(score != 0)System.out.println("score pion passe "+score);
-		return score;
-	}
 	
-	private final static int evalPionPassePourUneColonne(Board board, int numeroDeColonne){
-		long masqueBlanc = 0;
-		long masquePositionsSousInfluenceBlanche = 0;
-		long masqueNoir = 0;
-		long masquePositionsSousInfluenceNoire = 0;
+	private static long pionsPassesNoirs;
+	private static long pionsPassesBlancs;
+	
+	private final static int evalPionPasse(Board board){
+		pionsPassesNoirs = (masqueNoir & (~masquePositionsSousInfluenceBlanche));
+		pionsPassesBlancs = (masqueBlanc & (~masquePositionsSousInfluenceNoire));
+		int valeurPD = 0;
+		int valeurPP = 0;
+		boolean pionBE = false;
+		boolean pionNE = false;
+		long value;
 		
-		Byte piece;
-		
-		for(byte position = 1 ; position < 7 ; position++){
-			piece = board.get2(position + numeroDeColonne << 3);
-			if(piece != null && Piece.isComme(piece, Pion.getValueStatic())){
-				if(Piece.isBlanc(piece)){
-					masqueBlanc += 1 << (position + numeroDeColonne << 3);
-					if(numeroDeColonne == 0){
-						for(int position2 = position+1 ; position2 < 7 ; position2++){
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + numeroDeColonne << 3);
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + (numeroDeColonne + 1) << 3);
-						}
-					}else if(numeroDeColonne == 7){
-						for(int position2 = position+1 ; position2 < 7 ; position2++){
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + (numeroDeColonne - 1) << 3);
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + numeroDeColonne << 3);
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + (numeroDeColonne + 1) << 3);
-						}
+		for(int colonne = 0 ; colonne < 8 ; colonne++){
+			for(int casesPourUneColonne = poidColonne[colonne] ; casesPourUneColonne < poidFinColonne[colonne] ; casesPourUneColonne++){
+				value = cases[casesPourUneColonne];
+				
+				if (pionsPassesBlancs != 0l && (pionsPassesBlancs & value) == value){
+					valeurPP++;
+				}
+				
+				if (pionsPassesNoirs != 0l && (pionsPassesNoirs & value) == value){
+					valeurPP--;
+				}
+				
+				if ((masqueBlanc & value) == value) {
+					if(pionBE){
+						valeurPD++;
 					}else{
-						for(int position2 = position+1 ; position2 < 7 ; position2++){
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + numeroDeColonne << 3);
-							masquePositionsSousInfluenceBlanche |= 1 << (position2 + (numeroDeColonne - 1) << 3);
-						}
+						pionBE = true;
 					}
-				}else{
-					masqueNoir += 1 << (position + numeroDeColonne << 3);
-					if(numeroDeColonne == 0){
-						for(int position2 = position-1 ; position2 > 0 ; position2--){
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + numeroDeColonne << 3);
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + (numeroDeColonne + 1) << 3);
-						}
-					}else if(numeroDeColonne == 7){
-						for(int position2 = position-1 ; position2 > 0 ; position2--){
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + (numeroDeColonne - 1) << 3);
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + numeroDeColonne << 3);
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + (numeroDeColonne + 1) << 3);
-						}
+				}
+				if ((masqueNoir & value) == value) {
+					if(pionNE){
+						valeurPD--;
 					}else{
-						for(int position2 = position-1 ; position2 > 0 ; position2--){
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + numeroDeColonne << 3);
-							masquePositionsSousInfluenceNoire |= 1 << (position2 + (numeroDeColonne - 1) << 3);
-						}
+						pionNE = true;
 					}
 				}
 			}
 		}
-		long pionsPassesNoirs = masqueNoir & (~masquePositionsSousInfluenceBlanche);
-		long pionsPassesBlancs = masqueBlanc & (~masquePositionsSousInfluenceNoire);
-		byte cptb = 0;
-		byte cptn = 0;
-		for(byte i = 1 ; i < 7 ; i++){
-			if ((pionsPassesBlancs & (1 << i)) == (1 << i)){
-				cptb++;
-			}
-			if ((pionsPassesNoirs & (1 << i)) == (1 << i)){
-				cptn++;
-			}
-		}
 		
-		return (cptb-cptn)*100;
+		return (valeurPP)*100-(valeurPD)*40;
 	}
 	
 }

@@ -63,21 +63,33 @@ public class Jeu {
 		int cpt = 0;
 		long t1;
 		long t2;
+		double tVB = 0l;
+		double tVN = 0l;
+		double totalValue = 0d;
+		double ratioValue = 0d;
+		
 		while(pasTermine){
 			System.out.println("blanc va joue");
 			t1 = GregorianCalendar.getInstance().getTime().getTime();
 			pasTermine = joueBlanc(cpt);
 			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			System.out.println("blanc a joue board/s "+(IntelligenceArtificielle.boardCalcule*1000/(t2-t1)));
+			tVB = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
+			System.out.println("blanc a joue board/s "+tVB);
 			BoardUtils.montrerLeBoard(jeuDEchec);
 			System.out.println("noir va joue");
 			t1 = GregorianCalendar.getInstance().getTime().getTime();
 			pasTermine = joueNoir(cpt);
 			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			System.out.println("noir a joue board/s "+(IntelligenceArtificielle.boardCalcule*1000/(t2-t1)));
+			tVN = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
+			System.out.println("noir a joue board/s "+tVN);
 			BoardUtils.montrerLeBoard(jeuDEchec);
-//			pasTermine = 1 > cpt++;
+			if(cpt > 1)	{
+				totalValue += (tVB/tVN)*100;
+				ratioValue = totalValue / (cpt-1);
+			}
+			pasTermine = 12 > cpt++;
 		}
+		System.out.println("perf Blanc "+ratioValue);
 //		while(true){
 //			System.out.println(" ");
 //		}
