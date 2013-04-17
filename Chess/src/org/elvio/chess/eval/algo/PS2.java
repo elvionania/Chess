@@ -6,6 +6,7 @@ import org.elvio.chess.elements.Dame;
 import org.elvio.chess.elements.Fou;
 import org.elvio.chess.elements.Piece;
 import org.elvio.chess.elements.Pion;
+import org.elvio.chess.elements.Roi;
 import org.elvio.chess.elements.Tour;
 import org.elvio.chess.util.BoardUtils;
 
@@ -168,8 +169,8 @@ public class PS2  implements FonctionEvaluation {
 											40,40,40,40,40,40,40,40,
 											48,48,48,48,48,48,48,48,
 											56,56,56,56,56,56,56,56};
-	private final static int[] pasEnAvantBlancPourLInfluence = {};
-	private final static int[] pasEnAvantNoirPourLInfluence = {};
+	private final static int[] pasEnAvantBlancPourLInfluence = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64};
+	private final static int[] pasEnAvantNoirPourLInfluence = {0,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62};
 	
 	private final static int[] poidColonne = {1,9,17,25,33,41,49,57};
 	private final static int[] poidFinColonne = {7,15,23,31,39,47,55,63};
@@ -191,7 +192,7 @@ public class PS2  implements FonctionEvaluation {
 			
 		for(int position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
 			if((piece = board.get2(position)) != null){
-				score += getEval(piece, position, cpt, cb, cn);
+				score += getEval(piece, position, cpt, board);
 			}
 		}
 		
@@ -200,96 +201,96 @@ public class PS2  implements FonctionEvaluation {
 		return score;
 	}
 	
-	private final static int getEval(Byte piece, int position, int cpt, int[] cb, int[] cn) {
+	private final static int getEval(Byte piece, int position, int cpt, Board board) {
 		if(Piece.isComme(piece, Pion.getValueStatic())){
-			return evalPion(position, piece, cb, cn);
+			return evalPion(position, piece, board);
 		}else if(Piece.isComme(piece, Cavalier.getValueStatic())){
-			return evalCavalier(position, piece);
+			return evalCavalier(position, piece,board);
 		}else if(Piece.isComme(piece, Fou.getValueStatic())){
-			return evalFou(position, piece);
+			return evalFou(position, piece, board);
 		}else if(Piece.isComme(piece, Tour.getValueStatic())){
-			return evalTour(position, piece);
+			return evalTour(position, piece, board);
 		}else if(Piece.isComme(piece, Dame.getValueStatic())){
-			return evalDame(position, piece);
+			return evalDame(position, piece, board);
 		}else{
 			if(cpt > 25){
-				return evalRoiFinal(position, piece);
+				return evalRoiFinal(position, piece,board);
 			}else{
-				return evalRoi(position, piece);
+				return evalRoi(position, piece, board);
 			}
 		}
 	}
 
-	private final static int evalRoi(int position, byte piece){
+	private final static int evalRoi(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			return valeursRoiBlanc1[position];
+			return valeursRoiBlanc1[position] + 10 * Roi.getPositionsJouables((byte) position, board).size();
 		}else{
-			return valeursRoiNoir1[position];
+			return valeursRoiNoir1[position] - 10 * Roi.getPositionsJouables((byte) position, board).size();
 		}
 	}
 	
-	private final static int evalRoiFinal(int position, byte piece){
+	private final static int evalRoiFinal(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			return valeursRoiBlanc2[position];
+			return valeursRoiBlanc2[position] + 10 * Roi.getPositionsJouables((byte) position, board).size();
 		}else{
-			return valeursRoiNoir2[position];
+			return valeursRoiNoir2[position] - 10 * Roi.getPositionsJouables((byte) position, board).size();
 		}
 	}
 	
-	private final static int evalDame(int position, byte piece){
+	private final static int evalDame(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			return valeursReineBlanche[position];
+			return valeursReineBlanche[position] + 10 * Dame.getPositionsJouables((byte) position, board).size();
 		}else{
-			return valeursReineNoire[position];
+			return valeursReineNoire[position] - 10 * Dame.getPositionsJouables((byte) position, board).size();
 		}
 	}
 	
-	private final static int evalTour(int position, byte piece){
+	private final static int evalTour(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			return valeursToursBlanches[position];
+			return valeursToursBlanches[position] + 10 * Tour.getPositionsJouables((byte) position, board).size();
 		}else{
-			return valeursToursNoires[position];
+			return valeursToursNoires[position] - 10 * Tour.getPositionsJouables((byte) position, board).size();
 		}
 	}
 	
-	private final static int evalFou(int position, byte piece){
+	private final static int evalFou(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			return valeursFousBlancs[position];
+			return valeursFousBlancs[position] + 10 * Fou.getPositionsJouables((byte) position, board).size();
 		}else{
-			return valeursFousNoirs[position];
+			return valeursFousNoirs[position] - 10 * Fou.getPositionsJouables((byte) position, board).size();
 		}
 	}
 
-	private final static int evalCavalier(int position, byte piece) {
+	private final static int evalCavalier(int position, byte piece, Board board) {
 		if(Piece.isBlanc(piece)){
-			return valeursCavaliersBlancs[position];
+			return valeursCavaliersBlancs[position] + 10 * Cavalier.getPositionsJouables((byte) position, board).size();
 		}else{
-			return valeursCavaliersNoirs[position];
+			return valeursCavaliersNoirs[position] - 10 * Cavalier.getPositionsJouables((byte) position, board).size();
 		}
 	}
 
 	
-	private final static int evalPion(int position, byte piece, int[] cb, int[] cn) {
+	private final static int evalPion(int position, byte piece, Board board) {
 		if(Piece.isBlanc(piece)){
 			
 			masqueBlanc |= cases[position];
-			for(int position2 = position+1 ; position2 < casesCB[position] ; position2++){
+			for(int position2 = pasEnAvantBlancPourLInfluence[position] ; position2 < casesCB[position] ; position2++){
 				masquePositionsSousInfluenceBlanche |= casesP8[position2];
 				masquePositionsSousInfluenceBlanche |= cases[position2];
 				masquePositionsSousInfluenceBlanche |= casesM8[position2];
 			}
 			
-			return valeursPionsBlancs[position];
+			return valeursPionsBlancs[position] + 10 * Pion.getPositionsJouables((byte) position, board).size();
 		}else{
 			
 			masqueNoir |= cases[position];
-			for(int position2 = position-1 ; position2 > casesCN[position] ; position2--){
+			for(int position2 = pasEnAvantNoirPourLInfluence[position] ; position2 > casesCN[position] ; position2--){
 				masquePositionsSousInfluenceNoire |= casesP8[position2];
 				masquePositionsSousInfluenceNoire |= cases[position2];
 				masquePositionsSousInfluenceNoire |= casesM8[position2];
 			}
 			
-			return valeursPionsNoirs[position];
+			return valeursPionsNoirs[position] - 10 * Pion.getPositionsJouables((byte) position, board).size();
 		}
 	}
 	

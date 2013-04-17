@@ -372,24 +372,25 @@ public class BoardUtils {
 	public final static boolean isMate(Byte couleur, Board board){
 		
 		byte leRoi = (byte) (Roi.getValueStatic() | couleur);
-				
-		if(board.getBoardAEvaluer() == null || board.getBoardAEvaluer().size()==0){
-			return false;
+		boolean ilYAUnRoi = false;
+		
+		for(int position = 0 ; position < 64 ; position++){
+			if(Piece.isComme(leRoi, board.get2(position))){
+				ilYAUnRoi = true;
+				if(BoardUtils.isCaseEnEchec((byte) position, couleur, board)){
+					if(Roi.getPositionsJouables((byte) position, board.get2(position), board).size() == 0){
+						return true;
+					}
+				}
+			}
+		}
+		if(!ilYAUnRoi){
+			System.out.println("deja plus de roi?");
+			return true;
 		}
 		
-		for(Board board1 : board.getBoardAEvaluer()){
-			if(board1.getBoardAEvaluer() == null || board1.getBoardAEvaluer().size() == 0){
-				return false;
-			}
-			for(Board board2 : board1.getBoardAEvaluer()){
-				for(Byte value : board2.getPieces()){
-					if(BoardUtils.memeEtat(value, leRoi)){
-						return false;
-					}					
-				}				
-			}
-		}
-		return true;
+		return false;
+				
 	}
 	
 	public final static boolean isNulle(byte couleur, Board board, PartieNulle evaluateurDePartieNulle){
