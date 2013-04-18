@@ -374,7 +374,7 @@ public class BoardUtils {
 	public final static boolean isMate(Byte couleur, Board board){
 		BoardEvalue evaluation = Evaluer.negaMax(2, board, couleur, 0, new PieceSquare());
 		
-		if(Piece.isBlanc(couleur) && evaluation.getScore() < 100000 
+		if(Piece.isBlanc(couleur) && evaluation.getScore() < -100000 
 				|| !Piece.isBlanc(couleur) && evaluation.getScore() > 100000){
 			return true;
 		}
