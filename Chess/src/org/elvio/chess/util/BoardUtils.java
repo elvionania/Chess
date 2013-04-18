@@ -16,6 +16,8 @@ import org.elvio.chess.elements.Piece;
 import org.elvio.chess.elements.Pion;
 import org.elvio.chess.elements.Roi;
 import org.elvio.chess.elements.Tour;
+import org.elvio.chess.eval.algo.PieceSquare;
+import org.elvio.chess.process.Evaluer;
 
 public class BoardUtils {
 
@@ -370,27 +372,14 @@ public class BoardUtils {
 	}
 	
 	public final static boolean isMate(Byte couleur, Board board){
+		BoardEvalue evaluation = Evaluer.negaMax(2, board, couleur, 0, new PieceSquare());
 		
-		byte leRoi = (byte) (Roi.getValueStatic() | couleur);
-		boolean ilYAUnRoi = false;
-		
-		for(int position = 0 ; position < 64 ; position++){
-			if(Piece.isComme(leRoi, board.get2(position))){
-				ilYAUnRoi = true;
-				if(BoardUtils.isCaseEnEchec((byte) position, couleur, board)){
-					if(Roi.getPositionsJouables((byte) position, board.get2(position), board).size() == 0){
-						return true;
-					}
-				}
-			}
-		}
-		if(!ilYAUnRoi){
-			System.out.println("deja plus de roi?");
+		if(Piece.isBlanc(couleur) && evaluation.getScore() < 100000 
+				|| !Piece.isBlanc(couleur) && evaluation.getScore() > 100000){
 			return true;
 		}
 		
 		return false;
-				
 	}
 	
 	public final static boolean isNulle(byte couleur, Board board, PartieNulle evaluateurDePartieNulle){

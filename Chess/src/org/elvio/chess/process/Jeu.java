@@ -1,13 +1,11 @@
 package org.elvio.chess.process;
 
-import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.Joueur;
 import org.elvio.chess.elements.PartieNulle;
 import org.elvio.chess.elements.Piece;
-import org.elvio.chess.eval.algo.Materiel1;
 import org.elvio.chess.eval.algo.PS2;
 import org.elvio.chess.eval.algo.PieceSquare;
 import org.elvio.chess.util.BoardUtils;
