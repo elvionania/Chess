@@ -129,22 +129,33 @@ public class BoardUtils {
 	}
 	
 	public final static void miseEnPlaceDesPiecesTest(Board board) {
-		board.put(BoardUtils.D4, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.E2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.F2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.G2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.H2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.E1, Piece.creation(Piece.BLANC, Roi.getValueStatic()));
+		board.put(BoardUtils.C8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
+		board.put(BoardUtils.H8, Piece.creation(Piece.NOIR, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
 		
-		board.put(BoardUtils.A7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.B7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.C7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
 		board.put(BoardUtils.D7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.E6, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
 		board.put(BoardUtils.F7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
 		board.put(BoardUtils.G7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.H7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.E8, Piece.creation(Piece.NOIR, Roi.getValueStatic()));
+		board.put(BoardUtils.H7, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
+		
+		board.put(BoardUtils.B6, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+		board.put(BoardUtils.H6, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+		
+		board.put(BoardUtils.A5, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
+		
+		board.put(BoardUtils.A4, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
+		board.put(BoardUtils.C4, Piece.creation(Piece.BLANC, Dame.getValueStatic()));
+		board.put(BoardUtils.E4, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+		board.put(BoardUtils.F4, Piece.creation(Piece.NOIR, Dame.getValueStatic()));
+		
+		board.put(BoardUtils.A3, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+		board.put(BoardUtils.D3, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+		board.put(BoardUtils.H3, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+		
+		board.put(BoardUtils.B2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+		board.put(BoardUtils.G2, Piece.creation(Piece.BLANC, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
+		
+		board.put(BoardUtils.A1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
+		board.put(BoardUtils.H1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
 	}
 	
 	public final static boolean isPieceAdverseAtPosition(Byte positionAutre, Byte positionMoi, Board board){
@@ -372,10 +383,36 @@ public class BoardUtils {
 	}
 	
 	public final static boolean isMate(Byte couleur, Board board){
-		BoardEvalue evaluation = Evaluer.negaMax(2, board, couleur, 0, new PieceSquare());
+		BoardEvalue evaluation = Evaluer.negaMax(2, board, couleur, 0, new PieceSquare(), null);
 		
-		if(Piece.isBlanc(couleur) && evaluation.getScore() < -100000 
-				|| !Piece.isBlanc(couleur) && evaluation.getScore() > 100000){
+		System.out.println("eval mate "+evaluation.getScore()+" couleur "+ (Piece.isBlanc(couleur)?"blanc":"noir"));
+		
+		if(Piece.isBlanc(couleur)){
+			System.out.println("blanc");
+		}else{
+			System.out.println("noir");
+		}
+		
+		if((evaluation.getScore() < -100000d)){
+			System.out.println("pas bon pour le blanc");
+		}else{
+			System.out.println("correct blanc");
+		}
+		
+		if((evaluation.getScore() > 100000d)){
+			System.out.println("pas bon pour le noir");
+		}else{
+			System.out.println("correct noir");
+		}
+		
+		if(Piece.isBlanc(couleur) && (evaluation.getScore() < -100000d))
+			System.out.println("m1");
+		
+		if(!Piece.isBlanc(couleur) && (evaluation.getScore() > 100000d))
+			System.out.println("m2");
+		
+		if(Piece.isBlanc(couleur) && (evaluation.getScore() < -100000d) 
+				|| !Piece.isBlanc(couleur) && (evaluation.getScore() > 100000d)){
 			return true;
 		}
 		

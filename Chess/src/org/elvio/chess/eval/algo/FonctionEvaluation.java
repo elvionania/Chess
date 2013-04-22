@@ -4,6 +4,6 @@ import org.elvio.chess.elements.Board;
 
 public interface FonctionEvaluation {
 	
-	public double getEval(Board board, int cpt);
+	public int getEval(Board board, int cpt);
 
 }

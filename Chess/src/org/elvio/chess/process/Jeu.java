@@ -8,6 +8,7 @@ import org.elvio.chess.elements.PartieNulle;
 import org.elvio.chess.elements.Piece;
 import org.elvio.chess.eval.algo.PS2;
 import org.elvio.chess.eval.algo.PieceSquare;
+import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardUtils;
 
 public class Jeu {
@@ -19,17 +20,19 @@ public class Jeu {
 	private boolean roiBlancMate;
 	private boolean partieNulle;
 	private PartieNulle evaluateurDePartieNulle;
+	private Temps temps;
 	
-	public Jeu(){
+	public Jeu(int tempsEnMinute){
 		jeuDEchec = new Board();
+		temps = new Temps(tempsEnMinute);
 		jeuDEchec.initialisation();
 		evaluateurDePartieNulle = new PartieNulle();
 	}
 	
 	//joueur1
-	Joueur joueur1 = new IntelligenceArtificielle(4, new PS2());
+	Joueur joueur1 = new IntelligenceArtificielle(2, new PS2(), temps);
 	//joueur2
-	Joueur joueur2 = new IntelligenceArtificielle(4, new PieceSquare());
+	Joueur joueur2 = new IntelligenceArtificielle(2, new PieceSquare(), temps);
 	
 	// determine qui est le blanc
 	
@@ -66,17 +69,23 @@ public class Jeu {
 		double totalValue = 0d;
 		double ratioValue = 0d;
 		
+		long t0 = GregorianCalendar.getInstance().getTime().getTime();
 		while(pasTermine){
 			System.out.println("blanc va joue");
 			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			pasTermine = joueBlanc(cpt);
+//			temps.vaJouer(t1-t0, score, cpt, true);
+			if(!joueBlanc(cpt)){
+				break;
+			}
 			t2 = GregorianCalendar.getInstance().getTime().getTime();
 			tVB = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
 			System.out.println("blanc a joue board/s "+tVB);
 			BoardUtils.montrerLeBoard(jeuDEchec);
 			System.out.println("noir va joue");
 			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			pasTermine = joueNoir(cpt);
+			if(!joueNoir(cpt)){
+				break;
+			}
 			t2 = GregorianCalendar.getInstance().getTime().getTime();
 			tVN = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
 			System.out.println("noir a joue board/s "+tVN);
@@ -85,7 +94,7 @@ public class Jeu {
 				totalValue += (tVB/tVN)*100;
 				ratioValue = totalValue / (cpt-1);
 			}
-			pasTermine = 12 > cpt++;
+			pasTermine = 0 > cpt++;
 		}
 		System.out.println("perf Blanc "+ratioValue);
 //		while(true){
@@ -127,6 +136,7 @@ public class Jeu {
 		
 		if(BoardUtils.isMate(Piece.NOIR, jeuDEchec)){
 			roiNoirMate = true;
+			System.out.println("noir mat 1");
 			return false;
 		}
 		

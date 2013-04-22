@@ -43,6 +43,18 @@ public class Roi extends Piece {
 		}
 		return listeDesPositionsJouables;
 	}
+	
+
+	public static int getMobilite(byte maPosition, Byte piece, Board board) {
+		int mobilite = 0;		
+		List<List<Byte>> chemins = getCheminsJouables(maPosition, board);
+		
+		for(List<Byte> chemin : chemins){
+			mobilite += getPositionsLibreSurLesCheminsM(maPosition, piece, chemin, board);
+		}
+				
+		return mobilite;
+	}
 
 	protected static List<List<Byte>> getCheminsJouables(Byte maPosition, Board board) {
 		List<List<Byte>> resultat = new ArrayList<List<Byte>>();

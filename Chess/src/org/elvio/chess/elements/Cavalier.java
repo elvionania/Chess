@@ -29,6 +29,39 @@ public class Cavalier extends Piece {
 		return listeDesPositionsJouables;
 	}
 	
+	public static int getMobilite(Byte maPosition, Byte piece, Board board) {
+		int mobilite = 0;		
+
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.UN, Piece.DEUX))){
+			mobilite++;
+		}
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.DEUX, Piece.UN))){
+			mobilite++;
+		}
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.DEUX))){
+			mobilite++;
+		}
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.DEUX, Piece.M_UN))){
+			mobilite++;
+		}
+		
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_DEUX))){
+			mobilite++;
+		}		
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_DEUX, Piece.UN))){
+			mobilite++;
+		} 
+		
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_DEUX))){
+			mobilite++;
+		}
+		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_DEUX, Piece.M_UN))){
+			mobilite++;
+		}
+		
+		return mobilite;
+	}
+	
 	public static List<Byte> getPositionsAttaques(Byte maPosition, Byte piece, Board board) {
 		return getPositionsJouables(maPosition, piece, board);
 	}
@@ -56,5 +89,5 @@ public class Cavalier extends Piece {
 			resultat.add(listeDesPositionsJouables);
 		}
 	}
-	
+
 }

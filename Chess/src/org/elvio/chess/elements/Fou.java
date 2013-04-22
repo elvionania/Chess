@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.elvio.chess.util.BoardUtils;
+import org.elvio.chess.util.CoupsJouables;
 
 public class Fou extends Piece {
 
@@ -31,6 +32,72 @@ public class Fou extends Piece {
 		return coupsJouables;
 	}
 
+	public static int getMobilite(Byte maPosition, Byte piece, Board board) {
+		int mobilite = 0;
+		Byte position;
+		byte i = 1;
+		byte j = 1;
+		
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
+			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+				mobilite++;
+			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+				mobilite++;
+				break;
+			}else{
+				break;
+			}
+			i++;
+			j++;
+		}
+		
+		i = -1;
+		j = 1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
+			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+				mobilite++;
+			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+				mobilite++;
+				break;
+			}else{
+				break;
+			}
+			i--;
+			j++;
+		}
+		
+		i = 1;
+		j = -1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
+			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+				mobilite++;
+			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+				mobilite++;
+				break;
+			}else{
+				break;
+			}
+			i++;
+			j--;
+		}
+		
+		i = -1;
+		j = -1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
+			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+				mobilite++;
+			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+				mobilite++;
+				break;
+			}else{
+				break;
+			}
+			i--;
+			j--;
+		}
+		return mobilite;
+	}
+	
 	public static List<List<Byte>> getCheminsJouables(Byte maPosition,
 			Board board) {
 		

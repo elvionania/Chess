@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.elvio.chess.util.BoardUtils;
+import org.elvio.chess.util.CoupsJouables;
 
 public class Pion extends Piece {
 	
@@ -30,6 +31,38 @@ public class Pion extends Piece {
 		getPrisesNormales(maPosition, Piece.UN, board, cheminsJouables);
 		cheminsJouables.addAll(getPrisesEnPassant(maPosition, piece, board));
 		return cheminsJouables;
+	}
+	
+	public static int getMobilite(Byte caseCourante, Byte piece, Board board) {
+		int mobilite = getPositionsLibreSurLesCheminsM(caseCourante, piece, getCheminsJouables(caseCourante, board).get(0), board);
+		mobilite += getPrisesNormalesM(caseCourante, board);
+		mobilite += getPrisesEnPassantM(caseCourante, piece, board);
+		return mobilite;
+	}
+	
+	private static int getPrisesEnPassantM(Byte maPosition, Byte maPiece, Board board) {
+		int mobilite = 0;
+		if(isCePionEstUnePriseEnPassantPossible(maPosition, board, Piece.M_UN)){
+			mobilite++;
+		}
+		if(isCePionEstUnePriseEnPassantPossible(maPosition, board, Piece.UN)){
+			mobilite++;
+		}
+		return mobilite;
+	} 
+	
+	private static int getPrisesNormalesM(Byte maPosition, Board board) {
+		if(BoardUtils.isPieceAdverseAtPosition(BoardUtils.getPosition(maPosition, Piece.M_UN, avancer(Piece.UN, board.get(maPosition))), maPosition, board)){
+			if(BoardUtils.isPieceAdverseAtPosition(BoardUtils.getPosition(maPosition, Piece.UN, avancer(Piece.UN, board.get(maPosition))), maPosition, board)){
+				return 2;
+			}
+			return 1;
+		}else{
+			if(BoardUtils.isPieceAdverseAtPosition(BoardUtils.getPosition(maPosition, Piece.UN, avancer(Piece.UN, board.get(maPosition))), maPosition, board)){
+				return 1;
+			}
+		}
+		return 0;
 	}
 
 	private static void getPrisesNormales(Byte maPosition, byte cote, Board board, List<Byte> cheminsJouables) {
@@ -110,6 +143,14 @@ public class Pion extends Piece {
 		
 		return resultats;
 	}
+	
+	protected static CoupsJouables getPositionsLibreSurLesChemins2(Byte maPosition, Byte piece, byte position, Board board){
+		if(board.get(position) == null){
+			return CoupsJouables.LIBRE;
+		}else{
+			return CoupsJouables.OCCUPE;
+		}
+}
 
 	public static boolean isUnPionEnMarcheEnAvant(Byte position, Byte maPosition,
 			Byte maPiece, Board board) {
@@ -122,7 +163,5 @@ public class Pion extends Piece {
 	public static byte getValueStaticBlanc() {
 		return valueStaticBlanche;
 	}
-	
-	
 
 }

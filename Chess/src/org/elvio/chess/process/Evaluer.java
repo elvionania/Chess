@@ -9,15 +9,15 @@ import org.elvio.chess.util.BoardUtils;
 
 public class Evaluer { 
 	
-	private static boolean voir = false;
+//	private static boolean voir = false;
+	private static int cptt = 0;
 	
 	private static BoardEvalue getEvaluation(Board board, int cpt, FonctionEvaluation fe){
 			return new BoardEvalue(board, fe.getEval(board, cpt));
 	}
 	
 	
-//	pourquoi le blanc a 3 de profondeur ne fait rien
-	public static BoardEvalue negaMax(int profondeur, Board board, Byte couleur, int cpt, FonctionEvaluation fe){
+	public static BoardEvalue negaMax(int profondeur, Board board, Byte couleur, int cpt, FonctionEvaluation fe, Integer maxParent){
 		BoardEvalue meilleursBoard = null;
 		board.setPositionsAttaquees(null);
 		
@@ -26,12 +26,12 @@ public class Evaluer {
 			return getEvaluation(board, cpt, fe);
 		}
 		
-		double facteur = 1;
+		int facteur = 1;
 		if(!Piece.isBlanc(couleur)){
 			facteur = -1;
 		}
 		
-		double max = -1000000000;
+		int max = -1000000000;
 		
 		Byte piece;
 		for(byte position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
@@ -47,23 +47,35 @@ public class Evaluer {
 //					}
 					
 					for(Board enfant : etat.getBoards()){
+						cptt++;
 						enfant.setPremierParentPremiereFois(board);
+						BoardEvalue negamax = negaMax((profondeur - 1), enfant, Piece.inverseCouleur(couleur), cpt, fe, (meilleursBoard==null?null:(facteur*max)));
+						Integer score = null;
+						if(negamax != null){
+							score = facteur * negamax.getScore();
+							System.out.println(cptt + " eval p "+profondeur+" score "+score);
+						}else{
+							continue;
+						}
 						
-						BoardEvalue negamax = negaMax((profondeur - 1), enfant, Piece.inverseCouleur(couleur), cpt, fe);
-						double score = facteur * negamax.getScore();
-//						if(voir){
-//							System.out.println("profondeur "+profondeur+" pour le coup "+position+"-"+coup+" score "+score);
-//						}
+						if (maxParent != null && score > (facteur*maxParent)){
+							System.out.println(cptt+" branche a couper "+score+" / "+(facteur*maxParent));
+							break;
+						}
+						
 						if(score > max) {
 							max = score;
+							System.out.println(cptt + " eval p "+profondeur+" best score "+max);
 							meilleursBoard = negamax.clone();
 						}
 					}
+					
 					BoardUtils.remonteLeCoup(board, etat);
 				}
 			}
 		}
 		return meilleursBoard;
 	}
+
 
 }

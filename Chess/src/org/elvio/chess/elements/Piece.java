@@ -3,6 +3,8 @@ package org.elvio.chess.elements;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.elvio.chess.util.CoupsJouables;
+
 public abstract class Piece {
 
 	protected static final String valeurBinaire = "00000000";
@@ -58,6 +60,33 @@ public abstract class Piece {
 		return positionsJouablesSurLeChemin;
 	}
 	
+	protected static CoupsJouables getPositionsLibreSurLesChemins2(Byte maPosition, Byte piece, byte position, Board board){
+			Byte couleur;
+			if((couleur = board.get(position)) == null){
+				return CoupsJouables.LIBRE;
+			}else if (!isMemeCouleur(piece, couleur)){
+				return CoupsJouables.PRENABLE;
+			}else{
+				return CoupsJouables.OCCUPE;
+			}
+	}
+	
+	protected static int getPositionsLibreSurLesCheminsM(Byte maPosition, Byte piece, List<Byte> positionsDUnChemin, Board board){
+		int mobilite = 0;
+		
+		for(Byte position : positionsDUnChemin){
+			if(board.get(position) == null){
+				mobilite++;
+			}else if (!isMemeCouleur(piece, board.get(position))){
+				mobilite++;
+				break;
+			}else{
+				break;
+			}
+		}
+		return mobilite;
+	}
+	
 	public boolean isMemeCouleur(Piece piece){
 		if((value & BLANC) == (piece.getValue() & BLANC)){
 			return true;
@@ -109,8 +138,22 @@ public abstract class Piece {
 		}
 		return false;
 	}
+	
+	public final static boolean isDifferenteCouleur(Byte moi, Byte autre) {
+		if(autre == null || moi == null){
+			return false;
+		}
+		if((moi & BLANC) != (autre & BLANC)){
+			return true;
+		}
+		return false;
+	}
 
 	public final static boolean isComme(byte etat, byte pieceAComparer) {
+		return ((etat & pieceAComparer) == pieceAComparer);
+	}
+	
+	public final static boolean isComme(Byte etat, byte pieceAComparer) {
 		return ((etat & pieceAComparer) == pieceAComparer);
 	}
 	
@@ -154,6 +197,25 @@ public abstract class Piece {
 			}
 		return null;
 	}
+	
+	public static int getMobilite(Byte caseCourante, Board board) {	
+		Byte piece = board.get(caseCourante);
+			if(Piece.isComme(piece, Pion.getValueStatic())){
+				return Pion.getMobilite(caseCourante, piece, board);
+			}else if(Piece.isComme(piece, Cavalier.getValueStatic())){
+				return Cavalier.getMobilite(caseCourante, piece, board);
+			}else if(Piece.isComme(piece, Fou.getValueStatic())){
+				return Fou.getMobilite(caseCourante, piece, board);
+			}else if(Piece.isComme(piece, Tour.getValueStatic())){
+				return Tour.getMobilite(caseCourante, piece, board);
+			}else if(Piece.isComme(piece, Dame.getValueStatic())){
+				return Dame.getMobilite(caseCourante, piece, board);
+			}else if(Piece.isComme(piece, Roi.getValueStatic())){
+				return Roi.getMobilite(caseCourante, piece, board);
+			}
+		return 0;
+	}
+	
 
 	public final static Byte inverseCouleur(Byte couleur) {
 		if(isBlanc(couleur)){

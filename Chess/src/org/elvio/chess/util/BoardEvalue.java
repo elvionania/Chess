@@ -5,9 +5,9 @@ import org.elvio.chess.elements.Board;
 public class BoardEvalue {
 
 	Board board;
-	Double score;
+	int score;
 	
-	public BoardEvalue(Board board, Double score){
+	public BoardEvalue(Board board, int score){
 		this.board = board;
 		this.score = score;
 	}
@@ -20,11 +20,11 @@ public class BoardEvalue {
 		this.board = board;
 	}
 
-	public Double getScore() {
+	public int getScore() {
 		return score;
 	}
 
-	public void setScore(Double score) {
+	public void setScore(int score) {
 		this.score = score;
 	}
 	

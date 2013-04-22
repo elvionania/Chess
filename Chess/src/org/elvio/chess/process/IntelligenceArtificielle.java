@@ -5,6 +5,7 @@ import java.util.List;
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.Joueur;
 import org.elvio.chess.eval.algo.FonctionEvaluation;
+import org.elvio.chess.time.Temps;
 
 public class IntelligenceArtificielle extends Joueur {
 
@@ -13,7 +14,7 @@ public class IntelligenceArtificielle extends Joueur {
 	private FonctionEvaluation fe;
 	public static long boardCalcule;
 	
-	public IntelligenceArtificielle(int i, FonctionEvaluation fe) {
+	public IntelligenceArtificielle(int i, FonctionEvaluation fe, Temps temps) {
 		this.profondeur = i;
 		this.fe = fe;
 	}
@@ -24,7 +25,7 @@ public class IntelligenceArtificielle extends Joueur {
 		
 //		observer.genererLesPossibilites(profondeur);
 		boardCalcule = 0;
-		Board meilleurBoard = Evaluer.negaMax(profondeur, board, couleur, cpt, fe).getBoard();
+		Board meilleurBoard = Evaluer.negaMax(profondeur, board, couleur, cpt, fe, null).getBoard();
 		Board boardPremierCoupDuMeilleurBoard = meilleurBoard.getPremierParent();
 		boardPremierCoupDuMeilleurBoard.setPremierParent(null);
 		boardPremierCoupDuMeilleurBoard.setBoardAEvaluer(null);

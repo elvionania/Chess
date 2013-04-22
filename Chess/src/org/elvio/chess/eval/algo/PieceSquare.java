@@ -125,7 +125,7 @@ public class PieceSquare implements FonctionEvaluation{
 														-999950,-999970,-999970,-999970,-999970,-999970,-999970,-999950};
 	
 	
-	public final double getEval(Board board, int cpt){		
+	public final int getEval(Board board, int cpt){		
 		int score = 0;
 		Byte piece;
 			
