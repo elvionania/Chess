@@ -191,7 +191,7 @@ public class PS2  implements FonctionEvaluation {
 		masquePositionsSousInfluenceNoire = 0l;
 			
 		for(int position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
-			if((piece = board.get2(position)) != null){
+			if((piece = board.get(position)) != null){
 				score += getEval(piece, position, cpt, board);
 			}
 		}
@@ -232,60 +232,60 @@ public class PS2  implements FonctionEvaluation {
 
 	private final static int evalRoi(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			mobilite += Roi.getMobilite((byte) position, piece, board);
+			mobilite += Roi.getMobilite(position, piece, board);
 			return valeursRoiBlanc1[position];
 		}else{
-			mobilite -= Roi.getMobilite((byte) position, piece, board);
+			mobilite -= Roi.getMobilite(position, piece, board);
 			return valeursRoiNoir1[position];
 		}
 	}
 	
 	private final static int evalRoiFinal(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			mobilite += Roi.getMobilite((byte) position, piece, board); 
+			mobilite += Roi.getMobilite(position, piece, board); 
 			return valeursRoiBlanc2[position];
 		}else{
-			mobilite -= Roi.getMobilite((byte) position, piece, board);
+			mobilite -= Roi.getMobilite(position, piece, board);
 			return valeursRoiNoir2[position];
 		}
 	}
 	
 	private final static int evalDame(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			mobilite += Dame.getMobilite((byte) position, piece, board);
+			mobilite += Dame.getMobilite(position, piece, board);
 			return valeursReineBlanche[position];
 		}else{
-			mobilite -= Dame.getMobilite((byte) position, piece, board);
+			mobilite -= Dame.getMobilite(position, piece, board);
 			return valeursReineNoire[position];
 		}
 	}
 	
 	private final static int evalTour(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			mobilite += Tour.getMobilite((byte) position, piece, board);
+			mobilite += Tour.getMobilite(position, piece, board);
 			return valeursToursBlanches[position];
 		}else{
-			mobilite -= Tour.getMobilite((byte) position, piece, board);
+			mobilite -= Tour.getMobilite(position, piece, board);
 			return valeursToursNoires[position];
 		}
 	}
 	
 	private final static int evalFou(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
-			mobilite += Fou.getMobilite((byte) position, piece, board);
+			mobilite += Fou.getMobilite(position, piece, board);
 			return valeursFousBlancs[position];
 		}else{
-			mobilite -= Fou.getMobilite((byte) position, piece, board);
+			mobilite -= Fou.getMobilite(position, piece, board);
 			return valeursFousNoirs[position];
 		}
 	}
 
 	private final static int evalCavalier(int position, byte piece, Board board) {
 		if(Piece.isBlanc(piece)){
-			mobilite += Cavalier.getMobilite((byte) position, piece, board);
+			mobilite += Cavalier.getMobilite(position, piece, board);
 			return valeursCavaliersBlancs[position];
 		}else{
-			mobilite -= Cavalier.getMobilite((byte) position, piece, board);
+			mobilite -= Cavalier.getMobilite(position, piece, board);
 			return valeursCavaliersNoirs[position];
 		}
 	}

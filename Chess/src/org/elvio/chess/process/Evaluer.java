@@ -9,22 +9,17 @@ import org.elvio.chess.util.BoardUtils;
 
 public class Evaluer { 
 	
-//	private static boolean voir = false;
-	private static int cptt = 0;
-	
 	private static BoardEvalue getEvaluation(Board board, int cpt, FonctionEvaluation fe){
 			return new BoardEvalue(board, fe.getEval(board, cpt));
 	}
 	
-	
 	public static BoardEvalue negaMax(int profondeur, Board board, Byte couleur, int cpt, FonctionEvaluation fe, Integer maxParent){
-		BoardEvalue meilleursBoard = null;
-		board.setPositionsAttaquees(null);
-		
 		if (profondeur == 0){
 			IntelligenceArtificielle.boardCalcule++;
 			return getEvaluation(board, cpt, fe);
 		}
+		
+		BoardEvalue meilleursBoard = null;
 		
 		int facteur = 1;
 		if(!Piece.isBlanc(couleur)){
@@ -32,45 +27,46 @@ public class Evaluer {
 		}
 		
 		int max = -1000000000;
-		
-		Byte piece;
-		for(byte position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
-			piece = board.get(position);
-			if(Piece.isMemeCouleur(piece, couleur)){
-				for(Byte coup : Piece.getPositionsJouables(position, board)){
+		boolean brancheCoupee = false;
+		Byte piece = null;
+		EtatDUnBoard etat = null;
+		for(int position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
+			if(Piece.isMemeCouleur((piece = board.get(position)), couleur)){
+				board.setPositionsAttaquees(null);
+				for(int coup : Piece.getPositionsJouables(position, piece, board)){
+					etat = BoardUtils.getBoardApresUnCoup(position, piece, coup, board, etat);
 					
-					EtatDUnBoard etat = BoardUtils.getBoardApresUnCoup(position, coup, board);
-					
-//					if(profondeur == 3){						
-//						voir = (position == 9);
-//						System.out.println(" voir "+voir+" position "+position);
-//					}
-					
-					for(Board enfant : etat.getBoards()){
-						cptt++;
-						enfant.setPremierParentPremiereFois(board);
-						BoardEvalue negamax = negaMax((profondeur - 1), enfant, Piece.inverseCouleur(couleur), cpt, fe, (meilleursBoard==null?null:(facteur*max)));
-						Integer score = null;
-						if(negamax != null){
-							score = facteur * negamax.getScore();
-							System.out.println(cptt + " eval p "+profondeur+" score "+score);
-						}else{
-							continue;
-						}
-						
-						if (maxParent != null && score > (facteur*maxParent)){
-							System.out.println(cptt+" branche a couper "+score+" / "+(facteur*maxParent));
-							break;
-						}
-						
-						if(score > max) {
-							max = score;
-							System.out.println(cptt + " eval p "+profondeur+" best score "+max);
-							meilleursBoard = negamax.clone();
+					if(etat.isRoiBlancDevore() || etat.isRoiNoirDevore()){
+						meilleursBoard = getEvaluation(board, cpt, fe).clone();
+						meilleursBoard.addCoupARetenir(position, coup);
+					}else{
+						for(Board enfant : etat.getBoards()){
+							enfant.setPremierParentPremiereFois(board);
+							BoardEvalue negamax = negaMax((profondeur - 1), enfant, Piece.inverseCouleur(couleur), cpt, fe, (meilleursBoard==null?null:(facteur*max)));
+							Integer score = null;
+							if(negamax != null){
+								score = facteur * negamax.getScore();
+							}else{
+								continue;
+							}
+							
+							if (brancheCoupee = (maxParent != null && score > (facteur*maxParent))){
+								break;
+							}
+							
+							if(score > max) {
+								max = score;
+								meilleursBoard = negamax.clone();
+								meilleursBoard.addCoupARetenir(position, coup);
+							}
 						}
 					}
-					
+										
 					BoardUtils.remonteLeCoup(board, etat);
+					
+					if(brancheCoupee){
+						return null;
+					}
 				}
 			}
 		}

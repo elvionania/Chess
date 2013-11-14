@@ -1,5 +1,7 @@
 package org.elvio.chess.time;
 
+import org.elvio.chess.elements.Piece;
+
 public class Temps {
 
 	private long tempsEnSecondeDeLaPartie;
@@ -7,9 +9,8 @@ public class Temps {
 	private long dateInitiale;
 	private long dateCourante;
 	private int nbreDeCoup;
-	private int premierCoupReflechi;
-	private boolean minimum;
 	private int score;
+	private byte couleur;
 	
 	private int parcelDeTemps;
 	
@@ -17,17 +18,17 @@ public class Temps {
 		tempsEnSecondeDeLaPartie = tempsEnMinute*60;
 		tempsCourantEnSeconde = tempsEnMinute*60;
 		nbreDeCoup = 0;
-		minimum = false;
 		score = 0;
 	}
 	
-	public void vaJouer(int milliSeconde, int score, int nbreDeCoup, boolean premierCoupReflechi){
-		tempsCourantEnSeconde = milliSeconde/1000;
+	public void vaJouer(int score, int nbreDeCoup, byte couleur){
 		this.score = score;
 		this.nbreDeCoup = nbreDeCoup;
-		if(premierCoupReflechi){
-			this.premierCoupReflechi = nbreDeCoup;
-		}
+		this.couleur = couleur;
+	}
+	
+	public void setTempsCourant(long milliSeconde){
+		tempsCourantEnSeconde = milliSeconde/1000;
 	}
 	
 	public int getParcelDeTemps(){
@@ -40,7 +41,17 @@ public class Temps {
 		if(tempsCourantEnSeconde < 120){
 			parcelDeTemps = 0;
 		}else{
-			parcelDeTemps = 60;
+			parcelDeTemps = 10;
+			if(Piece.isBlanc(couleur) && score < 0){
+				parcelDeTemps *= 2;
+			}
+			if(!Piece.isBlanc(couleur) && score > 0){
+				parcelDeTemps *= 2;
+			}
+			if(nbreDeCoup < 12){
+				parcelDeTemps *= 2;
+			}
+			
 		}
 	}
 

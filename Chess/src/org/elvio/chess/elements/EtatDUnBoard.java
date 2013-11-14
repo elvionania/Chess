@@ -6,8 +6,10 @@ import java.util.List;
 public class EtatDUnBoard {
 
 	private List<Board> boards;
-	private List<List<List<Byte>>> coupARetenir;
+	private List<CoupARetenir> coupARetenir;
 	private Board premierParent;
+	private boolean roiBlancDevore;
+	private boolean roiNoirDevore;
 	
 	public EtatDUnBoard(){
 		boards = new ArrayList<Board>();
@@ -17,7 +19,7 @@ public class EtatDUnBoard {
 		boards = new ArrayList<Board>();
 		this.premierParent = premierParent;
 	}
-
+	
 	public List<Board> getBoards() {
 		return boards;
 	}
@@ -30,25 +32,26 @@ public class EtatDUnBoard {
 		this.boards.add(board);
 	}
 	
-	public void addBoards(List<Board> boards) {
-		this.boards.addAll(boards);
+	public void addBoards(Board[] boards) {
+		for(Board board : boards){
+			this.boards.add(board);
+		}
 	}
 	
-	public List<List<List<Byte>>> getCoupARetenir() {
+	public List<CoupARetenir> getCoupARetenir() {
 		return coupARetenir;
 	}
 	
-	public void setCoupARetenir(List<List<List<Byte>>> coupARetenir) {
+	public void setCoupARetenir(List<CoupARetenir> coupARetenir) {
 		this.coupARetenir = coupARetenir;
 	}
 
-	public void addCoupARetenir(List<List<List<Byte>>> coupARetenir) {
+	public void addCoupARetenir(CoupARetenir coupARetenir) {
 		if(this.coupARetenir == null){
-			this.coupARetenir = coupARetenir;
+			this.coupARetenir = new ArrayList<>();
+			this.coupARetenir.add(coupARetenir);
 		}else{
-			for(List<List<Byte>> coup : coupARetenir){
-				this.coupARetenir.add(coup);
-			}
+			this.coupARetenir.add(coupARetenir);
 		}
 		
 	}
@@ -70,9 +73,26 @@ public class EtatDUnBoard {
 	}
 
 	public void init() {
-		boards = new ArrayList<Board>();
-		coupARetenir = null;
-		premierParent = null;		
+		boards.clear();
+		coupARetenir = null;	
+		roiBlancDevore = false;
+		roiNoirDevore = false;
+	}
+
+	public boolean isRoiBlancDevore() {
+		return roiBlancDevore;
+	}
+
+	public void setRoiBlancDevore(boolean roiBlancDevore) {
+		this.roiBlancDevore = roiBlancDevore;
+	}
+
+	public boolean isRoiNoirDevore() {
+		return roiNoirDevore;
+	}
+
+	public void setRoiNoirDevore(boolean roiNoirDevore) {
+		this.roiNoirDevore = roiNoirDevore;
 	}
 	
 }

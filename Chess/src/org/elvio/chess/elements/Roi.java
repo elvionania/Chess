@@ -18,157 +18,191 @@ public class Roi extends Piece {
 		return valueStatic;
 	}
 	
-	public static List<Byte> getPositionsAttaques(Byte maPosition, Byte piece, Board board) {
-		List<Byte> listeDesPositionsJouables = new ArrayList<Byte>();		
-		List<List<Byte>> chemins = getCheminsJouables(maPosition, board);
-		
-		for(List<Byte> chemin : chemins){
-			listeDesPositionsJouables.addAll(getPositionsLibreSurLesChemins(maPosition, piece, chemin, board));
-		}
-		
-		return listeDesPositionsJouables;
+	public static List<Integer> getPositionsAttaques(int maPosition, Byte piece, Board board) {
+		return getCheminsDAttaque(maPosition, piece, board);
 	}
 
-	public static List<Byte> getPositionsJouables(Byte maPosition, Byte piece, Board board) {
+	public static List<Integer> getPositionsJouables(int maPosition, Byte piece, Board board) {
 		
-		List<Byte> listeDesPositionsJouables = getPositionsAttaques(maPosition, board);
+		List<Integer> listeDesPositionsJouables = getCheminsJouables(maPosition, piece, board);
 		
-		Byte petitRoque = getPetitRoque(maPosition, piece, board);
-		Byte grandRoque = getGrandRoque(maPosition, piece, board);
-		if(petitRoque != null){
+		int petitRoque = getPetitRoque(maPosition, piece, board);
+		int grandRoque = getGrandRoque(maPosition, piece, board);
+		if(petitRoque != -1){
 			listeDesPositionsJouables.add(petitRoque);
 		}
-		if(grandRoque != null){
+		if(grandRoque != -1){
 			listeDesPositionsJouables.add(grandRoque);
 		}
 		return listeDesPositionsJouables;
 	}
 	
 
-	public static int getMobilite(byte maPosition, Byte piece, Board board) {
-		int mobilite = 0;		
-		List<List<Byte>> chemins = getCheminsJouables(maPosition, board);
-		
-		for(List<Byte> chemin : chemins){
-			mobilite += getPositionsLibreSurLesCheminsM(maPosition, piece, chemin, board);
+	public static int getMobilite(int maPosition, Byte piece, Board board) {
+		int mobilite = 0;
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.ZERO))){
+			mobilite++;		
 		}
-				
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.ZERO))){
+			mobilite++;
+		}
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_UN))){
+			mobilite++;
+		}
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.M_UN))){
+			mobilite++;
+		}
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_UN))){
+			mobilite++;
+		}
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.UN))){
+			mobilite++;
+		}
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.UN))){
+			mobilite++;
+		}
+		if(isElementInResultat(piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.UN))){
+			mobilite++;
+		}
+		
 		return mobilite;
 	}
 
-	protected static List<List<Byte>> getCheminsJouables(Byte maPosition, Board board) {
-		List<List<Byte>> resultat = new ArrayList<List<Byte>>();
+	protected static List<Integer> getCheminsJouables(int maPosition, Byte piece, Board board) {
+		List<Integer> resultat = new ArrayList<Integer>();
 
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.UN, Piece.ZERO));		
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.ZERO));
-		
-		if(maPosition%8 != 0){
-			addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_UN));
-			addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.M_UN));		
-			addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_UN));
-		}
-		
-		if(maPosition%8 != 7){
-			addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.UN, Piece.UN));		
-			addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.UN));
-			addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.UN));
-		}
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.ZERO));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.ZERO));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_UN));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.M_UN));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_UN));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.UN));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.UN));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.UN));
+				
+		return resultat;
+	}
+	
+	// pour attaque que ce soit pour le roi, la reine, le fou, la tour et le cavalier, ce sont autant les positions attaquees que defendues, donc pieces de meme couleur incluse
+	protected static List<Integer> getCheminsDAttaque(int maPosition, Byte piece, Board board) {
+		List<Integer> resultat = new ArrayList<Integer>();
+
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.ZERO));		
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.ZERO));
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_UN));
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.M_UN));		
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_UN));
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.UN, Piece.UN));		
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.ZERO, Piece.UN));
+		addElementInResultatEnAttaque(resultat, piece, board, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.UN));
 				
 		return resultat;
 	}
 
-	private static void addElementInResultat(List<List<Byte>> resultat,
-			Byte position){
-		if(position != null){
-			List<Byte> listeDesPositionsJouables = new ArrayList<Byte>();
-			listeDesPositionsJouables.add(position);
-			resultat.add(listeDesPositionsJouables);
+	// en faire un sans echec pour les positions d attaques 
+	
+	private static void addElementInResultatEnAttaque(List<Integer> resultat, Byte piece, Board board,
+			int position){		
+		if(position != -1 ){
+			resultat.add(position);
 		}
 	}
 	
-	private static Byte getPetitRoque(Byte maPosition, Byte piece, Board board){
+	private static void addElementInResultat(List<Integer> resultat, Byte piece, Board board,
+			int position){		
+		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position))) && !BoardUtils.isCaseEnEchec(position, piece, board)){
+			resultat.add(position);
+		}
+	}
+	
+	private static boolean isElementInResultat(Byte piece, Board board,	int position){		
+		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position))) && !BoardUtils.isCaseEnEchec(position, piece, board)){
+			return true;
+		}
+		return false;
+	}
+	
+	private static int getPetitRoque(int maPosition, Byte piece, Board board){
 		if(BoardUtils.memeEtat(piece, A_DEJA_JOUE)){
-			return null;
+			return -1;
 		}
 		
-		Byte positionInterstice2 = (byte) (maPosition + 2 * BoardUtils.NBRE_CASES_COLONNE);
+		int positionInterstice2 = maPosition + 16;
 		if(board.get(positionInterstice2)!=null){
-			return null;
+			return -1;
 		}
 		
-		Byte positionInterstice1 = (byte) (maPosition + 1 * BoardUtils.NBRE_CASES_COLONNE);
+		int positionInterstice1 = maPosition + 8;
 		if(board.get(positionInterstice1)!=null){
-			return null;
+			return -1;
 		}
 		
-		Byte positionDeLaTour = (byte) (maPosition + 3 * BoardUtils.NBRE_CASES_COLONNE);
+		int positionDeLaTour = maPosition + 24;
 		Byte tour = board.get(positionDeLaTour);
 		if(tour == null){
-			return null;
+			return -1;
 		}
 		if(BoardUtils.memeEtat(tour, A_DEJA_JOUE)){
-			return null;
+			return -1;
 		}
 		
-		Byte couleur = getCouleur(piece);
-		if(BoardUtils.isCaseEnEchec(positionInterstice2, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(positionInterstice2, piece, board)){
+			return -1;
 		}
-		if(BoardUtils.isCaseEnEchec(maPosition, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(maPosition, piece, board)){
+			return -1;
 		}
-		if(BoardUtils.isCaseEnEchec(positionInterstice1, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(positionInterstice1, piece, board)){
+			return -1;
 		}
 		
-		return (byte) (2*BoardUtils.NBRE_CASES_COLONNE + maPosition);
+		return (16 + maPosition);
 	}
 	
-	private static Byte getGrandRoque(Byte maPosition, Byte piece, Board board){
+	private static int getGrandRoque(int maPosition, Byte piece, Board board){
 
 		if(BoardUtils.memeEtat(piece, A_DEJA_JOUE)){
-			return null;
+			return -1;
 		}
 		
-		Byte positionInterstice3 = (byte) (maPosition - 3 * BoardUtils.NBRE_CASES_COLONNE);
+		int positionInterstice3 = maPosition - 24;
 		if(board.get(positionInterstice3)!=null){
-			return null;
+			return -1;
 		}
 		
-		Byte positionInterstice2 = (byte) (maPosition - 2 * BoardUtils.NBRE_CASES_COLONNE);
+		int positionInterstice2 = maPosition - 16;
 		if(board.get(positionInterstice2)!=null){
-			return null;
+			return -1;
 		}
 		
-		Byte positionInterstice1 = (byte) (maPosition - BoardUtils.NBRE_CASES_COLONNE);
+		int positionInterstice1 = maPosition - 8;
 		if(board.get(positionInterstice1)!=null){
-			return null;
+			return -1;
 		}
 		
-		Byte positionDeLaTour = (byte) (maPosition - 4 * BoardUtils.NBRE_CASES_COLONNE);
+		int positionDeLaTour = maPosition - 32;
 		Byte tour = board.get(positionDeLaTour);
 		if(tour == null){
-			return null;
+			return -1;
 		}
 		if(BoardUtils.memeEtat(tour, A_DEJA_JOUE)){
-			return null;
+			return -1;
 		}
 		
-		Byte couleur = getCouleur(piece);
-		if(BoardUtils.isCaseEnEchec(positionInterstice1, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(positionInterstice1, piece, board)){
+			return -1;
 		}
-		if(BoardUtils.isCaseEnEchec(maPosition, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(maPosition, piece, board)){
+			return -1;
 		}
-		if(BoardUtils.isCaseEnEchec(positionInterstice2, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(positionInterstice2, piece, board)){
+			return -1;
 		}
-		if(BoardUtils.isCaseEnEchec(positionInterstice3, couleur, board)){
-			return null;
+		if(BoardUtils.isCaseEnEchec(positionInterstice3, piece, board)){
+			return -1;
 		}
 		
-		return (byte) (maPosition - 2 * BoardUtils.NBRE_CASES_COLONNE);
+		return maPosition - 16;
 	}
 
 }

@@ -30,7 +30,7 @@ public class Materiel1  implements FonctionEvaluation {
 	public final int getEval(Board board, int cpt){
 		int resultat = 0;
 		for(int position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
-			resultat += eval(board.get2(position));
+			resultat += eval(board.get(position));
 		}
 		return resultat;
 	}

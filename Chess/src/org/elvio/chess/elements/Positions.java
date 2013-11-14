@@ -14,7 +14,7 @@ public enum Positions {
 	H1("H1", "00111000"), H2("H2","00111001"),H3("H3", "00111010"), H4("H4", "00111011"), H5("H5", "00111100"), H6("H6","00111101"), H7("H7", "00111110"), H8("H8", "00111111");
 	
 	private String nom;
-	private Byte valeur;
+	private int valeur;
 	
 	private Positions(String nom, String valeur){
 		this.nom = nom;

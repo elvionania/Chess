@@ -6,8 +6,8 @@ import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.Joueur;
 import org.elvio.chess.elements.PartieNulle;
 import org.elvio.chess.elements.Piece;
+import org.elvio.chess.elements.Pion;
 import org.elvio.chess.eval.algo.PS2;
-import org.elvio.chess.eval.algo.PieceSquare;
 import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardUtils;
 
@@ -30,9 +30,10 @@ public class Jeu {
 	}
 	
 	//joueur1
-	Joueur joueur1 = new IntelligenceArtificielle(2, new PS2(), temps);
+	Joueur joueur1 = new IntelligenceArtificielle(10, new PS2(), temps);
 	//joueur2
-	Joueur joueur2 = new IntelligenceArtificielle(2, new PieceSquare(), temps);
+//	Joueur joueur2 = new IntelligenceArtificielle(5, new PieceSquare(), temps);
+	Joueur joueur2 = new Humain();
 	
 	// determine qui est le blanc
 	
@@ -63,7 +64,7 @@ public class Jeu {
 		BoardUtils.montrerLeBoard(jeuDEchec);
 		int cpt = 0;
 		long t1;
-		long t2;
+		long t2 = 0l;
 		double tVB = 0l;
 		double tVN = 0l;
 		double totalValue = 0d;
@@ -73,8 +74,9 @@ public class Jeu {
 		while(pasTermine){
 			System.out.println("blanc va joue");
 			t1 = GregorianCalendar.getInstance().getTime().getTime();
-//			temps.vaJouer(t1-t0, score, cpt, true);
-			if(!joueBlanc(cpt)){
+			temps.setTempsCourant(t1-t0);
+			reInitPriseEnPassant(Piece.BLANC);
+			if(!joueBlanc(cpt,temps)){
 				break;
 			}
 			t2 = GregorianCalendar.getInstance().getTime().getTime();
@@ -83,20 +85,34 @@ public class Jeu {
 			BoardUtils.montrerLeBoard(jeuDEchec);
 			System.out.println("noir va joue");
 			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			if(!joueNoir(cpt)){
+			temps.setTempsCourant(t1-t0);
+			
+			reInitPriseEnPassant(Piece.NOIR);
+			
+			if(!joueNoir(cpt, temps)){
 				break;
 			}
+			
 			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			tVN = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
+			long totalTps = t2 - t1;
+			if(totalTps == 0){
+				totalTps = 1l;
+			}
+			tVN = (IntelligenceArtificielle.boardCalcule*1000/(totalTps));
 			System.out.println("noir a joue board/s "+tVN);
+			System.out.println("le coup numero "+cpt++);
+			if(cpt == 14){
+				System.out.println(jeuDEchec.get(53));
+			}
 			BoardUtils.montrerLeBoard(jeuDEchec);
 			if(cpt > 1)	{
-				totalValue += (tVB/tVN)*100;
+				totalValue += tVN;
 				ratioValue = totalValue / (cpt-1);
 			}
-			pasTermine = 0 > cpt++;
+//			pasTermine = 2 > cpt++;
 		}
-		System.out.println("perf Blanc "+ratioValue);
+		System.out.println("perf "+ratioValue);
+		System.out.println(" temps "+(t2-t0)/1000);
 //		while(true){
 //			System.out.println(" ");
 //		}
@@ -115,8 +131,26 @@ public class Jeu {
 		
 	}
 
-	private boolean joueNoir(int cpt) {
-		jeuDEchec = joueurNoir.jouer(jeuDEchec, cpt);
+	private void reInitPriseEnPassant(byte couleur) {
+		for(int i = 0 ; i < 64 ; i++){
+			if(jeuDEchec.get(i)!= null && Piece.isMemeCouleur(couleur, jeuDEchec.get(i)) && Piece.isComme(jeuDEchec.get(i), Pion.getValueStatic())){
+				jeuDEchec.put(i, (byte) (jeuDEchec.get(i)&Piece.NA_PLUS_AVANCER_DE_2));
+			}
+		}
+	}
+
+	private boolean joueNoir(int cpt, Temps temps) {
+		Board board = joueurNoir.jouer(jeuDEchec, cpt, temps);
+		
+		if(board == null){
+			roiNoirMate = true;
+			return false;
+		}
+		
+		if(board.getBoardAEvaluer()==null){
+			System.out.println("p2");
+		}
+		jeuDEchec = board;
 		
 		if(BoardUtils.isMate(Piece.BLANC, jeuDEchec)){
 			roiBlancMate = true;
@@ -131,12 +165,18 @@ public class Jeu {
 		return true;
 	}
 
-	private boolean joueBlanc(int cpt) {
-		jeuDEchec = joueurBlanc.jouer(jeuDEchec, cpt);
+	private boolean joueBlanc(int cpt, Temps temps) {
+		Board board = joueurBlanc.jouer(jeuDEchec, cpt, temps);
+		
+		if(board == null){
+			roiBlancMate = true;
+			return false;
+		}
+		
+		jeuDEchec = board;
 		
 		if(BoardUtils.isMate(Piece.NOIR, jeuDEchec)){
 			roiNoirMate = true;
-			System.out.println("noir mat 1");
 			return false;
 		}
 		

@@ -8,23 +8,25 @@ import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.EtatDUnBoard;
 import org.elvio.chess.elements.Joueur;
 import org.elvio.chess.elements.Piece;
+import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardUtils;
 
 public class Humain extends Joueur {
 
 	Board boardUneFoisJoue;
-	private Byte positionInitiale;
-	private Byte positionFinale;
+	private int positionInitiale;
+	private int positionFinale;
+	private Scanner scanner = new Scanner(System.in);
 	
 	@Override
-	public Board jouer(Board board, int cpt) {
+	public Board jouer(Board board, int cpt, Temps temps) {
 		
 		BoardUtils.montrerLeBoard(board);
 		
 		while(true){
 			if(valider(saisirDonnees(), board)){
 				// voir si  plus d un board
-				EtatDUnBoard boardsPossibles = BoardUtils.getBoardApresUnCoup(positionInitiale, positionFinale, board); 
+				EtatDUnBoard boardsPossibles = BoardUtils.getBoardApresUnCoup(positionInitiale, board.get(positionInitiale), positionFinale, board, null); 
 				if(boardsPossibles.size() == 1){
 					boardUneFoisJoue = boardsPossibles.get(0);
 					break;
@@ -79,7 +81,8 @@ public class Humain extends Joueur {
 			return false;
 		}else{
 			System.out.println("la piece est la");
-			boolean coupJouable = Piece.getPositionsJouables(positionInitiale, board).contains(positionFinale);
+			List<Integer> positionJ = Piece.getPositionsJouables(positionInitiale, board.get(positionInitiale), board);
+			boolean coupJouable = positionJ.contains(positionFinale);
 			System.out.println("est le coup est jouable "+coupJouable);
 			return coupJouable;
 		}
@@ -88,16 +91,11 @@ public class Humain extends Joueur {
 
 	private Byte[] saisirDonnees(){
 
-		Scanner scanner = null;
-		scanner = new Scanner(System.in);
 		System.out.println("entree une donnee");
-		String positionDepart = scanner.next();
+		String positionDepart = scanner.nextLine();
 		System.out.println("entree 1 " +positionDepart);
-		String positionFin = scanner.next();
+		String positionFin = scanner.nextLine();
 		System.out.println("entree 2 " +positionFin);
-		scanner.close();
-		
-		
 		
 		return BoardUtils.traduirePositionHumaineEnPositionSysteme(positionDepart, positionFin);
 		

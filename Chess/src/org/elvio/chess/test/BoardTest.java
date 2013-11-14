@@ -23,13 +23,13 @@ public class BoardTest {
 		board = new Board();
 		board.initialisation();
 		
-		List<byte[]> datas = new ArrayList<>();
-		byte[] data1 = {BoardUtils.A2, BoardUtils.A7};
-		byte[] data2 = {BoardUtils.F2, BoardUtils.H2};
-		byte[] data3 = {BoardUtils.A7, BoardUtils.A2};
-		byte[] data4 = {BoardUtils.E1, BoardUtils.E8};
-		byte[] data5 = {BoardUtils.A2, BoardUtils.B2};
-		byte[] data6 = {BoardUtils.A7, BoardUtils.C6};
+		List<int[]> datas = new ArrayList<>();
+		int[] data1 = {BoardUtils.A2, BoardUtils.A7};
+		int[] data2 = {BoardUtils.F2, BoardUtils.H2};
+		int[] data3 = {BoardUtils.A7, BoardUtils.A2};
+		int[] data4 = {BoardUtils.E1, BoardUtils.E8};
+		int[] data5 = {BoardUtils.A2, BoardUtils.B2};
+		int[] data6 = {BoardUtils.A7, BoardUtils.C6};
 		
 		datas.add(data1);
 		datas.add(data2);
@@ -93,14 +93,14 @@ public class BoardTest {
 			System.out.println("ko3");			
 		}
 		
-		BoardUtils.bouger(BoardUtils.A2, BoardUtils.A4, board);
+		BoardUtils.bouger(BoardUtils.A2, board.get(BoardUtils.A2), BoardUtils.A4, board.get(BoardUtils.A4), board);
 		if(BoardUtils.isEnPositionInitial(board.get(BoardUtils.A4))){
 			System.out.println("ko4");
 		}else{
 			System.out.println("ok4");			
 		}
 		
-		BoardUtils.bouger(BoardUtils.E1, BoardUtils.E2, board);
+		BoardUtils.bouger(BoardUtils.E1, board.get(BoardUtils.E1), BoardUtils.E2, board.get(BoardUtils.E2), board);
 		if(BoardUtils.isEnPositionInitial(board.get(BoardUtils.E2))){
 			System.out.println("ko5");
 		}else{

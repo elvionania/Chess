@@ -1,5 +1,7 @@
 package org.elvio.chess.elements;
 
+import org.elvio.chess.time.Temps;
+
 public abstract class Joueur {
 	
 	protected Byte couleur;
@@ -8,6 +10,6 @@ public abstract class Joueur {
 		this.couleur = couleur;		
 	}
 	
-	public abstract Board jouer(Board board, int cpt);
+	public abstract Board jouer(Board board, int cpt, Temps temps);
 
 }

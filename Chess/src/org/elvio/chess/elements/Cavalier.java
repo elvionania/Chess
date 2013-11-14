@@ -18,75 +18,84 @@ public class Cavalier extends Piece {
 		return valueStatic;
 	}
 
-	public static List<Byte> getPositionsJouables(Byte maPosition, Byte piece, Board board) {
-		List<Byte> listeDesPositionsJouables = new ArrayList<Byte>();		
-		List<List<Byte>> chemins = getCheminsJouables(maPosition, board);
-		
-		for(List<Byte> chemin : chemins){
-			listeDesPositionsJouables.addAll(getPositionsLibreSurLesChemins(maPosition,piece, chemin, board));
-		}		
-		
-		return listeDesPositionsJouables;
+	public static List<Integer> getPositionsJouables(int maPosition, Byte piece, Board board) {
+		return getCheminsJouables(maPosition, piece, board);
 	}
 	
-	public static int getMobilite(Byte maPosition, Byte piece, Board board) {
+	public static int getMobilite(int maPosition, Byte piece, Board board) {
 		int mobilite = 0;		
 
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.UN, Piece.DEUX))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, 1, 2)))){
 			mobilite++;
 		}
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.DEUX, Piece.UN))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, 2, 1)))){
 			mobilite++;
 		}
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.DEUX))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, -1, 2)))){
 			mobilite++;
 		}
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.DEUX, Piece.M_UN))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, 2, -1)))){
 			mobilite++;
 		}
 		
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_DEUX))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, 1, -2)))){
 			mobilite++;
 		}		
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_DEUX, Piece.UN))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, -2, 1)))){
 			mobilite++;
 		} 
 		
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_DEUX))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, -1, -2)))){
 			mobilite++;
 		}
-		if(Piece.isDifferenteCouleur(piece, BoardUtils.getPosition(maPosition, Piece.M_DEUX, Piece.M_UN))){
+		if(Piece.isDifferenteCouleur(piece, board.get(BoardUtils.getPosition(maPosition, -2, -1)))){
 			mobilite++;
 		}
 		
 		return mobilite;
 	}
 	
-	public static List<Byte> getPositionsAttaques(Byte maPosition, Byte piece, Board board) {
-		return getPositionsJouables(maPosition, piece, board);
-	}
-
-	protected static List<List<Byte>> getCheminsJouables(Byte maPosition, Board board) {
-		List<List<Byte>> resultat = new ArrayList<List<Byte>>();
-
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.UN, Piece.DEUX));		
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.DEUX, Piece.UN));		
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.DEUX));
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.DEUX, Piece.M_UN));
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.UN, Piece.M_DEUX));		
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_DEUX, Piece.UN));		
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_UN, Piece.M_DEUX));
-		addElementInResultat(resultat, BoardUtils.getPosition(maPosition, Piece.M_DEUX, Piece.M_UN));
+	public static List<Integer> getPositionsAttaques(int maPosition, Board board) {
+		List<Integer> resultat = new ArrayList<Integer>();
+		
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, 1, 2));		
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, 2, 1));		
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, -1, 2));
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, 2, -1));
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, 1, -2));		
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, -2, 1));		
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, -1, -2));
+		addElementAttaqueInResultat(resultat, board, BoardUtils.getPosition(maPosition, -2, -1));
 				
 		return resultat;
 	}
 
-	private static void addElementInResultat(List<List<Byte>> resultat,
-			Byte position){
-		if(position != null){
-			List<Byte> listeDesPositionsJouables = new ArrayList<Byte>();
-			listeDesPositionsJouables.add(position);
-			resultat.add(listeDesPositionsJouables);
+	protected static List<Integer> getCheminsJouables(int maPosition, Byte piece, Board board) {
+		List<Integer> resultat = new ArrayList<Integer>();
+			
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, 1, 2));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, 2, 1));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, -1, 2));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, 2, -1));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, 1, -2));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, -2, 1));		
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, -1, -2));
+		addElementInResultat(resultat, piece, board, BoardUtils.getPosition(maPosition, -2, -1));
+				
+		return resultat;
+	}
+
+	private static void addElementInResultat(List<Integer> resultat, Byte piece,
+			Board board, int position){
+		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position)))){
+			resultat.add(position);
+		}
+	}
+	
+	private static void addElementAttaqueInResultat(List<Integer> resultat,
+			Board board, int position){
+		if(position != -1){
+			resultat.add(position);
 		}
 	}
 

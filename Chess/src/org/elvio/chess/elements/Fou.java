@@ -19,29 +19,144 @@ public class Fou extends Piece {
 		return valueStatic;
 	}
 	
-	public static List<Byte> getPositionsAttaques(Byte maPosition, Byte piece, Board board) {
-		return getPositionsJouables(maPosition, piece, board);
+	public static List<Integer> getPositionsAttaques(int maPosition, Byte piece, Board board) {
+		List<Integer> coupsAttaques = new ArrayList<Integer>();
+		int position;
+		int i = 1;
+		int j = 1;
+		
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsAttaques.add(position);
+			}else{
+				coupsAttaques.add(position);
+				break;
+			}
+			i++;
+			j++;
+		}
+		
+		i = -1;
+		j = 1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsAttaques.add(position);
+			}else{
+				coupsAttaques.add(position);
+				break;
+			}
+			i--;
+			j++;
+		}
+		
+		i = 1;
+		j = -1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsAttaques.add(position);
+			}else{
+				coupsAttaques.add(position);
+				break;
+			}
+			i++;
+			j--;
+		}
+		
+		i = -1;
+		j = -1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsAttaques.add(position);
+			}else{
+				coupsAttaques.add(position);
+				break;
+			}
+			i--;
+			j--;
+		}
+		return coupsAttaques;
 	}
 
-	public static List<Byte> getPositionsJouables(Byte maPosition, Byte piece, Board board) {
-		List<List<Byte>> chemins = getCheminsJouables(maPosition, board);
-		List<Byte> coupsJouables = new ArrayList<Byte>();
-		for(List<Byte> chemin : chemins){
-			coupsJouables.addAll(getPositionsLibreSurLesChemins(maPosition, piece, chemin, board));
+	public static List<Integer> getPositionsJouables(int maPosition, Byte piece, Board board) {
+		List<Integer> coupsJouables = new ArrayList<Integer>();
+		CoupsJouables coup;
+		int position;
+		int i = 1;
+		int j = 1;
+		
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsJouables.add(position);
+			}else if (coup == CoupsJouables.PRENABLE){
+				coupsJouables.add(position);
+				break;
+			}else{
+				break;
+			}
+			i++;
+			j++;
+		}
+		
+		i = -1;
+		j = 1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsJouables.add(position);
+			}else if (coup == CoupsJouables.PRENABLE){
+				coupsJouables.add(position);
+				break;
+			}else{
+				break;
+			}
+			i--;
+			j++;
+		}
+		
+		i = 1;
+		j = -1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsJouables.add(position);
+			}else if (coup == CoupsJouables.PRENABLE){
+				coupsJouables.add(position);
+				break;
+			}else{
+				break;
+			}
+			i++;
+			j--;
+		}
+		
+		i = -1;
+		j = -1;
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
+				coupsJouables.add(position);
+			}else if (coup == CoupsJouables.PRENABLE){
+				coupsJouables.add(position);
+				break;
+			}else{
+				break;
+			}
+			i--;
+			j--;
 		}
 		return coupsJouables;
 	}
-
-	public static int getMobilite(Byte maPosition, Byte piece, Board board) {
+	
+	
+	
+	public static int getMobilite(int maPosition, Byte piece, Board board) {
 		int mobilite = 0;
-		Byte position;
-		byte i = 1;
-		byte j = 1;
+		int position;
+		CoupsJouables coup;
+		int i = 1;
+		int j = 1;
 		
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
 				mobilite++;
-			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+			}else if (coup ==CoupsJouables.PRENABLE){
 				mobilite++;
 				break;
 			}else{
@@ -53,10 +168,10 @@ public class Fou extends Piece {
 		
 		i = -1;
 		j = 1;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
 				mobilite++;
-			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+			}else if (coup ==CoupsJouables.PRENABLE){
 				mobilite++;
 				break;
 			}else{
@@ -68,10 +183,10 @@ public class Fou extends Piece {
 		
 		i = 1;
 		j = -1;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
 				mobilite++;
-			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+			}else if (coup ==CoupsJouables.PRENABLE){
 				mobilite++;
 				break;
 			}else{
@@ -83,10 +198,10 @@ public class Fou extends Piece {
 		
 		i = -1;
 		j = -1;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			if(getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.LIBRE){
+		while((position = BoardUtils.getPosition(maPosition, i, j)) != -1){
+			if((coup = getPositionsLibreSurLesChemins(maPosition, piece, position, board)) == CoupsJouables.LIBRE){
 				mobilite++;
-			}else if (getPositionsLibreSurLesChemins2(maPosition, piece, position, board)==CoupsJouables.PRENABLE){
+			}else if (coup ==CoupsJouables.PRENABLE){
 				mobilite++;
 				break;
 			}else{
@@ -96,55 +211,6 @@ public class Fou extends Piece {
 			j--;
 		}
 		return mobilite;
-	}
-	
-	public static List<List<Byte>> getCheminsJouables(Byte maPosition,
-			Board board) {
-		
-		List<List<Byte>> chemins = new ArrayList<List<Byte>>();
-		
-		List<Byte> diagHautDroit = new ArrayList<Byte>();
-		byte i = 1;
-		byte j = 1;
-		Byte position;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			diagHautDroit.add(position);
-			i++;
-			j++;
-		}
-		chemins.add(diagHautDroit);
-		
-		List<Byte> diagHautGauche = new ArrayList<Byte>();
-		i = -1;
-		j = 1;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			diagHautGauche.add(position);
-			i--;
-			j++;
-		}
-		chemins.add(diagHautGauche);
-		
-		List<Byte> diagBasDroit = new ArrayList<Byte>();
-		i = 1;
-		j = -1;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			diagBasDroit.add(position);
-			i++;
-			j--;
-		}
-		chemins.add(diagBasDroit);
-		
-		List<Byte> diagBasGauche = new ArrayList<Byte>();
-		i = -1;
-		j = -1;
-		while((position = BoardUtils.getPosition(maPosition, i, j)) != null){
-			diagBasGauche.add(position);
-			i--;
-			j--;
-		}
-		chemins.add(diagBasGauche);
-		
-		return chemins;
 	}
 	
 }
