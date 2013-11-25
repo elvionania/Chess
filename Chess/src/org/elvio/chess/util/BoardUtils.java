@@ -154,18 +154,14 @@ public class BoardUtils {
 			return false;
 		}
 		
-		if(!Piece.isMemeCouleur(moi, autre)){
-			return true;
-		}
-		
-		return false;
+		return(!Piece.isMemeCouleur(moi, autre));
 	}
 	
 	public final static boolean isEnPositionInitial(Byte monEtat) {
 		return !comparerEtat(monEtat, Piece.A_DEJA_JOUE);
 	}
 
-	private final static boolean comparerEtat(Byte monEtat, byte etat) {
+	private static boolean comparerEtat(Byte monEtat, byte etat) {
 		if(monEtat==null){
 			return false;
 		}
@@ -331,7 +327,7 @@ public class BoardUtils {
 			table[i>>3][modulo8(i)] = representation;
 		}
 		
-		String ligne = "";
+		String ligne;
 		for(int i = 0 ; i < 8 ; i++){
 			ligne="";
 			for(int j = 0 ; j < 8 ; j++){
@@ -367,29 +363,24 @@ public class BoardUtils {
 			System.out.println("correct noir");
 		}
 		
-		if(Piece.isBlanc(couleur) && (evaluation.getScore() < -100000d) 
-				|| !Piece.isBlanc(couleur) && (evaluation.getScore() > 100000d)){
-			return true;
-		}
-		
-		return false;
+		return(Piece.isBlanc(couleur) && 
+                        (evaluation.getScore() < -100000d) || 
+                        !Piece.isBlanc(couleur) && 
+                        (evaluation.getScore() > 100000d));
 	}
 	
 	public final static boolean isNulle(byte couleur, Board board, PartieNulle evaluateurDePartieNulle){
-		if(isNullePar50CoupsOu3PositionsIdentiques(board, evaluateurDePartieNulle) || isNulleParPat(couleur, board)){
-			return true;
-		}
-		return false;
+		return isNullePar50CoupsOu3PositionsIdentiques(board, evaluateurDePartieNulle) || isNulleParPat(couleur, board);
 	}
 	
-	private final static boolean isNullePar50CoupsOu3PositionsIdentiques(Board board, PartieNulle evaluateurDePartieNulle){
+	private static boolean isNullePar50CoupsOu3PositionsIdentiques(Board board, PartieNulle evaluateurDePartieNulle){
 		StringBuilder representationDunEchiquier = new StringBuilder();
 		if(board.getBoardSize()!=evaluateurDePartieNulle.getNbreDePieceSurLeGame()){
 			evaluateurDePartieNulle.setNbreDePieceSurLeGame(board.getBoardSize());
 			evaluateurDePartieNulle.setCoupJouePourAnnulerEn50Coups(0);
 			evaluateurDePartieNulle.setNbrePositionsIdentiques(new HashMap<String, Byte>());
 		}else{
-			TreeSet<Byte> positionOrdonnees = new TreeSet<Byte>(board.getPositions());
+			TreeSet<Byte> positionOrdonnees = new TreeSet<>(board.getPositions());
 			for(Byte position: positionOrdonnees) {
 				representationDunEchiquier.append(position).append(board.get(position));
 			}
@@ -416,23 +407,31 @@ public class BoardUtils {
 	
 	public final static boolean isNulleParPat(byte couleur, Board board){
 		
-		boolean pat = false;
 		for(Byte position : board.getPositions()){
 			if(Roi.isComme(position, Roi.getValueStatic()) && Piece.isMemeCouleur(board.get(position), couleur) && !isCaseEnEchec(position, couleur, board)){
-				if(isCaseNonJouablePourLeRoi(position, -1, -1, board)){
-					return 
-				}
-			}else{
-				return false;
+				if(!isCaseNonJouablePourLeRoi(position, -1, -1, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, -1, 0, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, -1, 1, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, 0, -1, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, 0, 1, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, 1, -1, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, 1, 0, board) ||
+                                        !isCaseNonJouablePourLeRoi(position, 1, 1, board)
+                                        ){
+					return false;   
+                                }                                    
 			}
 		}
+                
 		board.setPositionsAttaquees(null);
+                
 		System.out.println("pat");
+                
 		return true;
 	}
 	
 	//a revoir la logique
-	private final static boolean isCaseNonJouablePourLeRoi(Byte position, int mvtX, int mvtY, Board board){
+	private static boolean isCaseNonJouablePourLeRoi(Byte position, int mvtX, int mvtY, Board board){
 		int positionDuRoiApresDeplacement;
 		Byte etatDuRoiApresDeplacement;
 		board.setPositionsAttaquees(null);		
@@ -448,7 +447,7 @@ public class BoardUtils {
 	}
 	
 	public final static EtatDUnBoard getBoardApresUnCoup(int positionInitiale, Byte pieceEnPositionInitial, int positionFinale, Board board, EtatDUnBoard etat){
-		EtatDUnBoard etatDUnBoard = null;
+		EtatDUnBoard etatDUnBoard;
 		if(etat == null){
 			etatDUnBoard = creationEtatBoard(board);
 		}else{
