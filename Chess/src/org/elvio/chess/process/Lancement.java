@@ -6,7 +6,7 @@ public class Lancement {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Jeu jeu = new Jeu(20);
+		Jeu jeu = new Jeu(2);
 		jeu.joue();
 	}
 

@@ -16,24 +16,31 @@ public class Jeu {
 	private Board jeuDEchec;
 	private Joueur joueurBlanc;
 	private Joueur joueurNoir;
-	private boolean roiNoirMate;
-	private boolean roiBlancMate;
+        
+        //hashMap couleur,roiMate
+	private Boolean roiNoirMate;
+	private Boolean roiBlancMate;
 	private boolean partieNulle;
-	private PartieNulle evaluateurDePartieNulle;
-	private Temps temps;
+	private final PartieNulle evaluateurDePartieNulle;
+	private final Temps tempsJoueur1;
+        private final Temps tempsJoueur2;
+        private final Joueur joueur1;
+        private final Joueur joueur2;
 	
 	public Jeu(int tempsEnMinute){
 		jeuDEchec = new Board();
-		temps = new Temps(tempsEnMinute);
 		jeuDEchec.initialisation();
-		evaluateurDePartieNulle = new PartieNulle();
+                
+                tempsJoueur1 = new Temps(tempsEnMinute);
+                tempsJoueur2 = new Temps(tempsEnMinute);
+		
+		evaluateurDePartieNulle = new PartieNulle();                
+                //joueur1
+                joueur1 = new IntelligenceArtificielle(4, new PS2(), tempsJoueur1);
+                //joueur2
+                joueur2 = new IntelligenceArtificielle(3, new PS2(), tempsJoueur2);
+                //	Joueur joueur2 = new Humain();
 	}
-	
-	//joueur1
-	Joueur joueur1 = new IntelligenceArtificielle(10, new PS2(), temps);
-	//joueur2
-//	Joueur joueur2 = new IntelligenceArtificielle(5, new PieceSquare(), temps);
-	Joueur joueur2 = new Humain();
 	
 	// determine qui est le blanc
 	
@@ -42,7 +49,7 @@ public class Jeu {
 //		if(0.5 <= Math.random()){
 			joueur1.setCouleur(Piece.BLANC);
 			joueur2.setCouleur(Piece.NOIR);
-			joueurBlanc = joueur1;
+			joueurBlanc = joueur1;                     
 			joueurNoir = joueur2;
 //			System.out.println("pc blanc");
 //		}else{
@@ -58,64 +65,26 @@ public class Jeu {
 	public void joue(){
 		determineCouleurDesJoueurs();
 		
-		boolean pasTermine = true;
-//		SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
-			
 		BoardUtils.montrerLeBoard(jeuDEchec);
-		int cpt = 0;
-		long t1;
-		long t2 = 0l;
-		double tVB = 0l;
-		double tVN = 0l;
-		double totalValue = 0d;
-		double ratioValue = 0d;
-		
-		long t0 = GregorianCalendar.getInstance().getTime().getTime();
-		while(pasTermine){
-			System.out.println("blanc va joue");
-			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			temps.setTempsCourant(t1-t0);
-			reInitPriseEnPassant(Piece.BLANC);
-			if(!joueBlanc(cpt,temps)){
-				break;
-			}
-			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			tVB = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
-			System.out.println("blanc a joue board/s "+tVB);
-			BoardUtils.montrerLeBoard(jeuDEchec);
-			System.out.println("noir va joue");
-			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			temps.setTempsCourant(t1-t0);
-			
-			reInitPriseEnPassant(Piece.NOIR);
-			
-			if(!joueNoir(cpt, temps)){
-				break;
-			}
-			
-			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			long totalTps = t2 - t1;
-			if(totalTps == 0){
-				totalTps = 1l;
-			}
-			tVN = (IntelligenceArtificielle.boardCalcule*1000/(totalTps));
-			System.out.println("noir a joue board/s "+tVN);
-			System.out.println("le coup numero "+cpt++);
-			if(cpt == 14){
-				System.out.println(jeuDEchec.get(53));
-			}
-			BoardUtils.montrerLeBoard(jeuDEchec);
-			if(cpt > 1)	{
-				totalValue += tVN;
-				ratioValue = totalValue / (cpt-1);
-			}
-//			pasTermine = 2 > cpt++;
+                
+                boolean partieToujoursEnCours = true;
+		int numeroDuCoup = 0;
+                long tempsAuCommencement = getTime();
+						
+                joueurBlanc.setTempsAuCommencement(tempsAuCommencement);
+                joueurNoir.setTempsAuCommencement(tempsAuCommencement);
+                
+		while(partieToujoursEnCours){
+                    if (joueurJoue(numeroDuCoup, joueurBlanc)) {
+                        break;
+                    }		
+                        
+                    if (joueurJoue(numeroDuCoup, joueurNoir)) {
+                        break;
+                    }	
+                        
+                    BoardUtils.montrerLeBoard(jeuDEchec);			
 		}
-		System.out.println("perf "+ratioValue);
-		System.out.println(" temps "+(t2-t0)/1000);
-//		while(true){
-//			System.out.println(" ");
-//		}
 		
 		if(roiBlancMate){
 			System.out.println("Blancs sont mat");
@@ -131,6 +100,30 @@ public class Jeu {
 		
 	}
 
+    // trop de decouplage inutile, defaire joueurJoue
+    // utiliser Joueur.getCouleur
+        
+    private boolean joueurJoue(int numeroDuCoup, Joueur joueur) {
+        long tempsInitial = getTime();
+        System.out.println("blanc va joue");
+        joueur.setTempsCourant(tempsInitial);        
+        reInitPriseEnPassant(joueur.getCouleur());
+        
+        if (!joue(numeroDuCoup, joueur.getTemps(), joueur)) {
+            return true;
+        }
+        
+        afficherPuissanceDeCalcul(getTime(), tempsInitial);
+        return false;
+    }
+
+    private void afficherPuissanceDeCalcul(long tempsFinal, long tempsInitial) {
+        double nbreDePositionsCalculesPourLeBlanc;
+        long denominateur = (tempsFinal-tempsInitial);
+        nbreDePositionsCalculesPourLeBlanc = (IntelligenceArtificielle.boardCalcule*1000/denominateur!=0?denominateur:1l);
+        System.out.println("a calcule "+nbreDePositionsCalculesPourLeBlanc + " board par seconde");
+    }
+
 	private void reInitPriseEnPassant(byte couleur) {
 		for(int i = 0 ; i < 64 ; i++){
 			if(jeuDEchec.get(i)!= null && Piece.isMemeCouleur(couleur, jeuDEchec.get(i)) && Piece.isComme(jeuDEchec.get(i), Pion.getValueStatic())){
@@ -139,53 +132,38 @@ public class Jeu {
 		}
 	}
 
-	private boolean joueNoir(int cpt, Temps temps) {
-		Board board = joueurNoir.jouer(jeuDEchec, cpt, temps);
-		
+	private boolean joue(int cpt, Temps temps, Joueur joueur) {
+		Board board = joueur.jouer(jeuDEchec, cpt, temps);
+                
 		if(board == null){
+                    if(joueur.getCouleur() == Piece.NOIR){
 			roiNoirMate = true;
-			return false;
+                    }else{
+                        roiBlancMate = true;
+                    }
+                    return false;
 		}
-		
-		if(board.getBoardAEvaluer()==null){
-			System.out.println("p2");
-		}
+				
 		jeuDEchec = board;
 		
 		if(BoardUtils.isMate(Piece.BLANC, jeuDEchec)){
 			roiBlancMate = true;
 			return false;
-		}
-		
-		if(BoardUtils.isNulle(Piece.BLANC, jeuDEchec, evaluateurDePartieNulle)){
-			partieNulle = true;
+		}else if(BoardUtils.isMate(Piece.NOIR, jeuDEchec)){
+                        roiNoirMate = true;
 			return false;
-		}
+                }
+		
+		if(BoardUtils.isNulle(joueur.getCouleur(), jeuDEchec, evaluateurDePartieNulle) ){
+                    partieNulle = true;
+                    return false;
+                }
 		
 		return true;
 	}
 
-	private boolean joueBlanc(int cpt, Temps temps) {
-		Board board = joueurBlanc.jouer(jeuDEchec, cpt, temps);
-		
-		if(board == null){
-			roiBlancMate = true;
-			return false;
-		}
-		
-		jeuDEchec = board;
-		
-		if(BoardUtils.isMate(Piece.NOIR, jeuDEchec)){
-			roiNoirMate = true;
-			return false;
-		}
-		
-		if(BoardUtils.isNulle(Piece.NOIR, jeuDEchec, evaluateurDePartieNulle)){
-			partieNulle = true;
-			return false;
-		}
-		
-		return true;
-	}
+    private long getTime() {
+        return GregorianCalendar.getInstance().getTime().getTime();
+    }
 	
 }

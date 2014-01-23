@@ -26,7 +26,7 @@ public class Board {
 		for(int i = 0 ; i < 64 ; i++){
 			board[i] = 0;
 		}
-		BoardUtils.miseEnPlaceDesPiecesTest(this);
+		BoardUtils.miseEnPlaceDesPieces(this, false);
 	}
 
 	public final void put(int position, Byte etat){

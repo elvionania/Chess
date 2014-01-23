@@ -23,6 +23,7 @@ public class IntelligenceArtificielle extends Joueur {
 	public IntelligenceArtificielle(int i, FonctionEvaluation fe, Temps temps) {
 		this.profondeur = i;
 		this.fe = fe;
+                this.temps = temps;
 	}
 
 	@Override

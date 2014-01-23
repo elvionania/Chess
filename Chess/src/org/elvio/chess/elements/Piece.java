@@ -26,7 +26,7 @@ public abstract class Piece {
 	protected static Byte value = (new Integer(Integer.parseInt(valeurBinaire,2))).byteValue();
 	
 	public Piece(Byte couleur) {
-		setValue(couleur);
+		value = (byte) (value & couleur);
 	}
 
 	public byte getValue() {

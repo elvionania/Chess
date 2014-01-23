@@ -92,8 +92,16 @@ public class BoardUtils {
 
 	private BoardUtils(){}	
 	
-	public final static void miseEnPlaceDesPieces(Board board) {
-		board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+	public final static void miseEnPlaceDesPieces(Board board, boolean test) {
+            if(test){
+                miseEnPlaceDesPiecesTest(board);
+            }else{
+                miseEnPlaceDesPieces(board);		
+            }
+	}
+	
+        private final static void miseEnPlaceDesPieces(Board board) {
+                board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.B2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.C2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.D2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
@@ -126,11 +134,9 @@ public class BoardUtils {
 		board.put(BoardUtils.F8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
 		board.put(BoardUtils.D8, Piece.creation(Piece.NOIR, Dame.getValueStatic()));
 		board.put(BoardUtils.E8, Piece.creation(Piece.NOIR, Roi.getValueStatic()));
-	}
-	
-	public final static void miseEnPlaceDesPiecesTest(Board board) {
+}
+	private final static void miseEnPlaceDesPiecesTest(Board board) {
 		board.put(BoardUtils.D4, Piece.creation(Piece.BLANC, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
-		
 		board.put(BoardUtils.E3, Piece.creation(Piece.BLANC, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
 		board.put(BoardUtils.E4, Piece.creation(Piece.NOIR, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
 		board.put(BoardUtils.E6, Piece.creation(Piece.NOIR, (byte) (Fou.getValueStatic()|Piece.A_DEJA_JOUE)));
@@ -405,30 +411,79 @@ public class BoardUtils {
 		return false;
 	}
 	
+        //TODO nulle si aucune pièce ne peut bouger sans mettre le roi en echec
+        // ou si le roi bougeant se met en echec
+                
+        // pos = position du roi de la couleur voulue
+        // // le roi est deja en echec
+        // si (echec(pos))
+        //      return false
+        // for (toutes les pieces de la couleur voulue)
+        //      piece <--
+        //      for(tout mouvement de la piece)
+        //              // on trouve un mouvement ne provoquant pas la mise en echec du roi        
+        //          si (board apres ce mouvement != echec(pos))
+        //              return false
+        // //on n a pas trouve de coup ne mettant pas en echecx le roi
+        // return true
 	public final static boolean isNulleParPat(byte couleur, Board board){
-		
-		for(Byte position : board.getPositions()){
-			if(Roi.isComme(position, Roi.getValueStatic()) && Piece.isMemeCouleur(board.get(position), couleur) && !isCaseEnEchec(position, couleur, board)){
-				if(!isCaseNonJouablePourLeRoi(position, -1, -1, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, -1, 0, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, -1, 1, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, 0, -1, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, 0, 1, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, 1, -1, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, 1, 0, board) ||
-                                        !isCaseNonJouablePourLeRoi(position, 1, 1, board)
-                                        ){
-					return false;   
-                                }                                    
-			}
-		}
-                
-		board.setPositionsAttaquees(null);
-                
-		System.out.println("pat");
-                
-		return true;
+        
+            // le roi est deja en echec, il ne peut etre alors pat
+            if (isRoiEnEchec(board, couleur)) {
+                return false;
+            }
+            
+            if (isRoiEnPat(board, couleur)) {
+                board.setPositionsAttaquees(null);
+                System.out.println("pat");
+
+                return true;                
+            }
+            
+            return false;
 	}
+
+    public static boolean isRoiEnPat(Board board, byte couleur) {
+        // on check sur toutes les cases de l echequiers sil y a une piece de la couleur dont on verifie
+        //si le roi est pat
+        Byte piece;
+        for (Byte position : board.getPositions()) {
+            if (Piece.isMemeCouleur(board.get(position), couleur)) {
+                piece = board.get(position);
+                // pour chacune de ces pieces, on regarde tous les coups possibles
+                for (int coup : Piece.getPositionsJouables(position, piece, board)) {
+                    EtatDUnBoard etatBoard = BoardUtils.getBoardApresUnCoup(position, piece, coup, board, null);
+                    // chaque coup produit une ou plusieurs (promotion variable) nouvelles dispositions des pieces
+                    //sur l echequier
+                    for (Board newBoard : etatBoard.getBoards()) {
+                        // sur chacune de ces dispositions nous recherchons de nouveau le roi
+                        for (Byte nbPosition : newBoard.getPositions()) {
+                            if (Roi.isComme(nbPosition, Roi.getValueStatic()) && Piece.isMemeCouleur(newBoard.get(nbPosition), couleur)) {
+                                //s il n est pas en echec, alors il existe un mouvement jouable
+                                if (!isCaseEnEchec(nbPosition, newBoard.get(nbPosition), newBoard)) {
+                                    //donc il il existe un coup ou le roi n est pas en echec
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public static boolean isRoiEnEchec(Board board, byte couleur) {
+        
+        for (Byte position : board.getPositions()) {
+            if (Roi.isComme(position, Roi.getValueStatic()) && Piece.isMemeCouleur(board.get(position), couleur)) {
+                if (isCaseEnEchec(position, couleur, board)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 	
 	//a revoir la logique
 	private static boolean isCaseNonJouablePourLeRoi(Byte position, int mvtX, int mvtY, Board board){
