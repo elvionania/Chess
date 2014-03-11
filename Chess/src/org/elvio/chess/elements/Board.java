@@ -26,7 +26,7 @@ public class Board {
 		for(int i = 0 ; i < 64 ; i++){
 			board[i] = 0;
 		}
-		BoardUtils.miseEnPlaceDesPieces(this, false);
+		BoardUtils.miseEnPlaceDesPieces(this, false, ";2;99;6;26;10;51;16;27;17;97;19;75;21;99;22;96;31;51;34;99;43;99;44;98;46;96;58;50;62;96");
 	}
 
 	public final void put(int position, Byte etat){
@@ -60,9 +60,9 @@ public class Board {
 		return false;
 	}
 		
-	public final Collection<Byte> getPositions(){
-		ArrayList<Byte> liste = new ArrayList<>();
-		for(byte i = 0 ; i < BoardUtils.NBRE_CASES_BOARD ; i++){
+	public final Collection<Integer> getPositions(){
+		ArrayList<Integer> liste = new ArrayList<>();
+		for(int i = 0 ; i < BoardUtils.NBRE_CASES_BOARD ; i++){
 			if(board[i] != 0){
 				liste.add(i);
 			}
@@ -132,5 +132,8 @@ public class Board {
 	public void setPositionsAttaquees(List<Integer> positionsAttaquees) {
 		this.positionsAttaquees = positionsAttaquees;
 	}
-	
+
+        public void creationPieceTest(int position, byte etatDUnePiece){
+            put(position, etatDUnePiece);
+        }
 }

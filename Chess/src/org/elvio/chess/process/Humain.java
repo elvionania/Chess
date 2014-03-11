@@ -8,7 +8,6 @@ import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.EtatDUnBoard;
 import org.elvio.chess.elements.Joueur;
 import org.elvio.chess.elements.Piece;
-import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardUtils;
 
 public class Humain extends Joueur {
@@ -19,7 +18,7 @@ public class Humain extends Joueur {
 	private Scanner scanner = new Scanner(System.in);
 	
 	@Override
-	public Board jouer(Board board, int cpt, Temps temps) {
+	public Board jouer(Board board, int numeroDuCoup) {
 		
 		BoardUtils.montrerLeBoard(board);
 		

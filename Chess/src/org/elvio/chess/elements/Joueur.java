@@ -24,10 +24,14 @@ public abstract class Joueur {
             return temps;
         }
 	
-	public abstract Board jouer(Board board, int cpt, Temps temps);
+	public abstract Board jouer(Board board, int numeroDuCoup);
 
         public void setTempsAuCommencement(long tempsAuCommencement) {
             this.tempsAuCommencement = tempsAuCommencement;
+        }
+        
+        public Byte getCouleurDeLAutreJoueur(){
+            return this.getCouleur() == Piece.BLANC ? Piece.NOIR : Piece.BLANC;
         }
 
 }

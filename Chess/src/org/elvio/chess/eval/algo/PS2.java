@@ -181,6 +181,7 @@ public class PS2  implements FonctionEvaluation {
 	private static long masquePositionsSousInfluenceNoire = 0l;
 	private static int mobilite;
 	
+        @Override
 	public final int getEval(Board board, int cpt){		
 		int score = 0;
 		Byte piece;
@@ -202,7 +203,7 @@ public class PS2  implements FonctionEvaluation {
 		return score;
 	}
 	
-	private final static int getEval(Byte piece, int position, int cpt, Board board) {
+	private static int getEval(Byte piece, int position, int cpt, Board board) {
 		if(Piece.isComme(piece, Pion.getValueStatic())){
 			return evalPion(position, piece, board);
 		}
@@ -230,7 +231,7 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 
-	private final static int evalRoi(int position, byte piece, Board board){
+	private static int evalRoi(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
 			mobilite += Roi.getMobilite(position, piece, board);
 			return valeursRoiBlanc1[position];
@@ -240,7 +241,7 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 	
-	private final static int evalRoiFinal(int position, byte piece, Board board){
+	private static int evalRoiFinal(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
 			mobilite += Roi.getMobilite(position, piece, board); 
 			return valeursRoiBlanc2[position];
@@ -250,7 +251,7 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 	
-	private final static int evalDame(int position, byte piece, Board board){
+	private static int evalDame(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
 			mobilite += Dame.getMobilite(position, piece, board);
 			return valeursReineBlanche[position];
@@ -260,7 +261,7 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 	
-	private final static int evalTour(int position, byte piece, Board board){
+	private static int evalTour(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
 			mobilite += Tour.getMobilite(position, piece, board);
 			return valeursToursBlanches[position];
@@ -270,7 +271,7 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 	
-	private final static int evalFou(int position, byte piece, Board board){
+	private static int evalFou(int position, byte piece, Board board){
 		if(Piece.isBlanc(piece)){
 			mobilite += Fou.getMobilite(position, piece, board);
 			return valeursFousBlancs[position];
@@ -280,7 +281,7 @@ public class PS2  implements FonctionEvaluation {
 		}
 	}
 
-	private final static int evalCavalier(int position, byte piece, Board board) {
+	private static int evalCavalier(int position, byte piece, Board board) {
 		if(Piece.isBlanc(piece)){
 			mobilite += Cavalier.getMobilite(position, piece, board);
 			return valeursCavaliersBlancs[position];
@@ -291,7 +292,7 @@ public class PS2  implements FonctionEvaluation {
 	}
 
 	
-	private final static int evalPion(int position, byte piece, Board board) {
+	private static int evalPion(int position, byte piece, Board board) {
 		if(Piece.isBlanc(piece)){
 			masqueBlanc |= cases[position];
 			for(int position2 = pasEnAvantBlancPourLInfluence[position] ; position2 < casesCB[position] ; position2++){
@@ -317,7 +318,7 @@ public class PS2  implements FonctionEvaluation {
 	private static long pionsPassesNoirs;
 	private static long pionsPassesBlancs;
 	
-	private final static int evalPionPasse(Board board){
+	private static int evalPionPasse(Board board){
 		pionsPassesNoirs = (masqueNoir & (~masquePositionsSousInfluenceBlanche));
 		pionsPassesBlancs = (masqueBlanc & (~masquePositionsSousInfluenceNoire));
 		int valeurPD = 0;

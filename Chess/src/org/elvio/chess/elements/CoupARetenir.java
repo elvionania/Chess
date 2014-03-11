@@ -32,5 +32,4 @@ public class CoupARetenir {
 		this.etatCoupFinal = etatCoupFinal;
 	}
 	
-	
 }
