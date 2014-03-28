@@ -5,9 +5,8 @@ import java.util.HashMap;
 public class PartieNulle {
 
 	private int coupJouePourAnnulerEn50Coups = 0;
-	private HashMap<String, Byte> nbrePositionsIdentiques = new HashMap<> ();
+	private HashMap<String, Byte> nbrePositionsIdentiques = new HashMap<String, Byte> ();
 	private int nbreDePieceSurLeGame = 0;
-        
 	public int getCoupJouePourAnnulerEn50Coups() {
 		return coupJouePourAnnulerEn50Coups;
 	}
@@ -38,10 +37,6 @@ public class PartieNulle {
 		this.nbrePositionsIdentiques.put(echequier, combien);
 	}
 	
-	public void initialisation(){
-            coupJouePourAnnulerEn50Coups = 0;
-            nbrePositionsIdentiques.clear();
-            nbreDePieceSurLeGame = 0;
-        }
+	
 	
 }

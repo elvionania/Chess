@@ -1,191 +1,119 @@
 package org.elvio.chess.process;
 
-import java.util.GregorianCalendar;
-
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.Joueur;
-import org.elvio.chess.elements.PartieNulle;
 import org.elvio.chess.elements.Piece;
-import org.elvio.chess.elements.Pion;
 import org.elvio.chess.eval.algo.PS2;
-import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardUtils;
+import org.elvio.chess.util.Outils;
+import org.elvio.chess.util.Regles;
+import org.elvio.chess.util.StatutPartie;
 
 public class Jeu {
 
-	private Board jeuDEchec;
-	private Joueur joueurBlanc;
-	private Joueur joueurNoir;
-	private boolean roiNoirMate;
-	private boolean roiBlancMate;
-	private boolean partieNulle;
-	private PartieNulle evaluateurDePartieNulle;
-	private Temps temps;
-	
-	public Jeu(int tempsEnMinute){
-		jeuDEchec = new Board();
-		temps = new Temps(tempsEnMinute);
-		jeuDEchec.initialisation();
-		evaluateurDePartieNulle = new PartieNulle();
-	}
-	
-	//joueur1
-	Joueur joueur1 = new IntelligenceArtificielle(10, new PS2(), temps);
-	//joueur2
-//	Joueur joueur2 = new IntelligenceArtificielle(5, new PieceSquare(), temps);
-	Joueur joueur2 = new Humain();
-	
-	// determine qui est le blanc
-	
-	private void determineCouleurDesJoueurs() {
-		
-//		if(0.5 <= Math.random()){
-			joueur1.setCouleur(Piece.BLANC);
-			joueur2.setCouleur(Piece.NOIR);
-			joueurBlanc = joueur1;
-			joueurNoir = joueur2;
-//			System.out.println("pc blanc");
-//		}else{
-//			joueur1.setCouleur(Piece.NOIR);
-//			joueur2.setCouleur(Piece.BLANC);
-//			joueurBlanc = joueur2;
-//			joueurNoir = joueur1;
-//			System.out.println("tu es blanc");
-//		}
-	}
-	
-	// commence la partie
-	public void joue(){
-		determineCouleurDesJoueurs();
-		
-		boolean pasTermine = true;
-//		SimpleDateFormat sdf = new SimpleDateFormat("mm:ss:SSS");
-			
-		BoardUtils.montrerLeBoard(jeuDEchec);
-		int cpt = 0;
-		long t1;
-		long t2 = 0l;
-		double tVB = 0l;
-		double tVN = 0l;
-		double totalValue = 0d;
-		double ratioValue = 0d;
-		
-		long t0 = GregorianCalendar.getInstance().getTime().getTime();
-		while(pasTermine){
-			System.out.println("blanc va joue");
-			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			temps.setTempsCourant(t1-t0);
-			reInitPriseEnPassant(Piece.BLANC);
-			if(!joueBlanc(cpt,temps)){
-				break;
-			}
-			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			tVB = (IntelligenceArtificielle.boardCalcule*1000/(t2-t1));
-			System.out.println("blanc a joue board/s "+tVB);
-			BoardUtils.montrerLeBoard(jeuDEchec);
-			System.out.println("noir va joue");
-			t1 = GregorianCalendar.getInstance().getTime().getTime();
-			temps.setTempsCourant(t1-t0);
-			
-			reInitPriseEnPassant(Piece.NOIR);
-			
-			if(!joueNoir(cpt, temps)){
-				break;
-			}
-			
-			t2 = GregorianCalendar.getInstance().getTime().getTime();
-			long totalTps = t2 - t1;
-			if(totalTps == 0){
-				totalTps = 1l;
-			}
-			tVN = (IntelligenceArtificielle.boardCalcule*1000/(totalTps));
-			System.out.println("noir a joue board/s "+tVN);
-			System.out.println("le coup numero "+cpt++);
-			if(cpt == 14){
-				System.out.println(jeuDEchec.get(53));
-			}
-			BoardUtils.montrerLeBoard(jeuDEchec);
-			if(cpt > 1)	{
-				totalValue += tVN;
-				ratioValue = totalValue / (cpt-1);
-			}
-//			pasTermine = 2 > cpt++;
-		}
-		System.out.println("perf "+ratioValue);
-		System.out.println(" temps "+(t2-t0)/1000);
-//		while(true){
-//			System.out.println(" ");
-//		}
-		
-		if(roiBlancMate){
-			System.out.println("Blancs sont mat");
-		}
-		
-		if(roiNoirMate){
-			System.out.println("Noirs sont mat");
-		}
-		
-		if(partieNulle){
-			System.out.println("La partie est nulle");
-		}
-		
-	}
+    private final int tempsEnMinute;
+    private Board board;
+    private Joueur joueurBlanc;
+    private Joueur joueurNoir;
+    private StatutPartie etatDeLaPartie;
+    private int numeroDuCoup;
+    private long tempsAuCommencement;
 
-	private void reInitPriseEnPassant(byte couleur) {
-		for(int i = 0 ; i < 64 ; i++){
-			if(jeuDEchec.get(i)!= null && Piece.isMemeCouleur(couleur, jeuDEchec.get(i)) && Piece.isComme(jeuDEchec.get(i), Pion.getValueStatic())){
-				jeuDEchec.put(i, (byte) (jeuDEchec.get(i)&Piece.NA_PLUS_AVANCER_DE_2));
-			}
-		}
-	}
+    public Jeu(int tempsEnMinute){
+        board = new Board();
+        board.initialisation();
+        this.tempsEnMinute = tempsEnMinute;
+    }
 
-	private boolean joueNoir(int cpt, Temps temps) {
-		Board board = joueurNoir.jouer(jeuDEchec, cpt, temps);
-		
-		if(board == null){
-			roiNoirMate = true;
-			return false;
-		}
-		
-		if(board.getBoardAEvaluer()==null){
-			System.out.println("p2");
-		}
-		jeuDEchec = board;
-		
-		if(BoardUtils.isMate(Piece.BLANC, jeuDEchec)){
-			roiBlancMate = true;
-			return false;
-		}
-		
-		if(BoardUtils.isNulle(Piece.BLANC, jeuDEchec, evaluateurDePartieNulle)){
-			partieNulle = true;
-			return false;
-		}
-		
-		return true;
-	}
+    /**
+     * creation des joueurs, on leur donne leur temps de jeu
+     * et leurs couleurs
+     */
+    private void initialisationDeLaPartieEtDesJoueurs() {
+        
+        etatDeLaPartie = StatutPartie.NON_FINIE;
+        numeroDuCoup = 0;
+        tempsAuCommencement = Outils.getTime();
+        joueurBlanc = new IntelligenceArtificielle(5, new PS2(), tempsEnMinute, Piece.BLANC);
+        joueurNoir = new IntelligenceArtificielle(3, new PS2(), tempsEnMinute, Piece.NOIR);
+        joueurBlanc.setTempsAuCommencement(tempsAuCommencement);
+        joueurNoir.setTempsAuCommencement(tempsAuCommencement);
+        
+        BoardUtils.montrerLeBoard(board);
+    }
 
-	private boolean joueBlanc(int cpt, Temps temps) {
-		Board board = joueurBlanc.jouer(jeuDEchec, cpt, temps);
-		
-		if(board == null){
-			roiBlancMate = true;
-			return false;
-		}
-		
-		jeuDEchec = board;
-		
-		if(BoardUtils.isMate(Piece.NOIR, jeuDEchec)){
-			roiNoirMate = true;
-			return false;
-		}
-		
-		if(BoardUtils.isNulle(Piece.NOIR, jeuDEchec, evaluateurDePartieNulle)){
-			partieNulle = true;
-			return false;
-		}
-		
-		return true;
-	}
-	
+    // commence la partie
+    public void partieCommence(){
+        // decouper cette methode 
+        // globaliser les variables
+        initialisationDeLaPartieEtDesJoueurs();
+
+        while(etatDeLaPartie == StatutPartie.NON_FINIE){
+            joueurJoue(joueurBlanc);
+            if(etatDeLaPartie != StatutPartie.NON_FINIE) break;
+
+            joueurJoue(joueurNoir);
+            if(etatDeLaPartie != StatutPartie.NON_FINIE) break;
+        }
+
+        finalisationDeLaPartie(etatDeLaPartie);
+    }
+    
+    //compartimenter en 3 methodes cette methode
+    private void joueurJoue(Joueur joueur) {
+        // preparation du jeu et du joueur avant son coup
+        initialisationAvantDeJouerLeCoup(joueur);
+        // on joue le coup
+        board = joueur.jouer(board, numeroDuCoup);
+        BoardUtils.montrerLeBoard(board);	
+        // on definit l'état de la partie après le coup
+        etatDeLaPartie = finalisationApresAvoirJouerLecoup(joueur);
+    }
+    
+    private void initialisationAvantDeJouerLeCoup(Joueur joueur){
+        System.out.println((Piece.isBlanc(joueur.getCouleur())?"blanc ":"noir ") + "va joue");
+        // on renseigne le joueur de l'heure
+        joueur.setTempsCourant(Outils.getTime());  
+        // les pions ayant avancé de deux cases étaient soumis à une prise en passant, 
+        // au nouveau tour de jeu ils ne sont plus soumis à cette règle
+        Regles.initialisationDesPrisesEnPassant(joueur.getCouleur(), board);
+    }
+    
+    private StatutPartie finalisationApresAvoirJouerLecoup(Joueur joueur){
+        // si le board retourné est null, c'est que le joueur n'est plus en jeu vu son score impliquant une absence de roi
+        if(board == null)                                           return savoirQuiAGagne(joueur, true);  
+        // l'adversaire est il mat?
+        if(Regles.isMate(joueur.getCouleurDeLAutreJoueur(), board)) return savoirQuiAGagne(joueur, false);
+        // la partie est nulle?
+        if(Regles.isNulle(joueur.getCouleur(), board) )             return StatutPartie.NULLE;
+        // alors la partie continue!                                                               
+        return StatutPartie.NON_FINIE;
+    }
+        
+    /**
+     * on affiche les resultats de la partie
+     * @param etatDeLaPartie 
+     */
+    private void finalisationDeLaPartie(StatutPartie etatDeLaPartie) {
+        switch(etatDeLaPartie){
+            case NULLE: 
+                System.out.println("La partie est nulle");
+                break;
+            case GAGNEE_PAR_LES_BLANCS:
+                System.out.println("Noirs sont mat");    
+                break;
+            case GAGNEE_PAR_LES_NOIRS:
+                System.out.println("Blancs sont mat");    
+                break;
+        }
+    }
+
+    // faire un isblanc et isnoir sur le joueur
+    private StatutPartie savoirQuiAGagne(Joueur joueur, boolean estMate) {
+        if(Piece.isBlanc(joueur.getCouleur()) && estMate){
+            return StatutPartie.GAGNEE_PAR_LES_NOIRS;
+        }else{
+            return StatutPartie.GAGNEE_PAR_LES_BLANCS;
+        }
+    }
 }

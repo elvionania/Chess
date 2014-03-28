@@ -21,9 +21,10 @@ public class Temps {
 		score = 0;
 	}
 	
-	public void initAvantDeJouer(int score, int nbreDeCoup){
+	public void vaJouer(int score, int nbreDeCoup, byte couleur){
 		this.score = score;
 		this.nbreDeCoup = nbreDeCoup;
+		this.couleur = couleur;
 	}
 	
 	public void setTempsCourant(long milliSeconde){

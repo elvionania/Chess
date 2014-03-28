@@ -21,8 +21,8 @@ public class Pion extends Piece {
 		return valueStatic;
 	}
 	
-	public static List<Integer> getPositionsAttaques(int maPosition, Board board) {
-		List<Integer> cheminsAttaquables = new ArrayList<>();
+	public static List<Integer> getPositionsAttaques(int maPosition, Byte piece, Board board) {
+		List<Integer> cheminsAttaquables = new ArrayList<Integer>();
 		int avance = avancer(1, board.get(maPosition));
 		int positionAdverse = BoardUtils.getPosition(maPosition, 1, avance);
 		cheminsAttaquables.add(positionAdverse);
@@ -124,10 +124,6 @@ public class Pion extends Piece {
 
 	public static byte getValueStaticBlanc() {
 		return valueStaticBlanche;
-	}
-        
-        public final static boolean isComme(Byte etat) {
-		return ((etat & valueStatic) == valueStatic);
 	}
 	
 }

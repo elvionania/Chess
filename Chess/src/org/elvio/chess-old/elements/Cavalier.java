@@ -98,9 +98,5 @@ public class Cavalier extends Piece {
 			resultat.add(position);
 		}
 	}
-        
-        public final static boolean isComme(Byte etat) {
-		return ((etat & valueStatic) == valueStatic);
-	}
 
 }

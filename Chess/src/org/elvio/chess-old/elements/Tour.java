@@ -189,9 +189,5 @@ public class Tour extends Piece {
 		
 		return mobilite;
 	}
-        
-        public final static boolean isComme(Byte etat) {
-		return ((etat & valueStatic) == valueStatic);
-	}
 
 }
