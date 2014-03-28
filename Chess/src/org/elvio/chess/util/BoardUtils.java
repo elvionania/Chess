@@ -1,7 +1,8 @@
 package org.elvio.chess.util;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.Cavalier;
@@ -9,10 +10,13 @@ import org.elvio.chess.elements.CoupARetenir;
 import org.elvio.chess.elements.Dame;
 import org.elvio.chess.elements.EtatDUnBoard;
 import org.elvio.chess.elements.Fou;
+import org.elvio.chess.elements.PartieNulle;
 import org.elvio.chess.elements.Piece;
 import org.elvio.chess.elements.Pion;
 import org.elvio.chess.elements.Roi;
 import org.elvio.chess.elements.Tour;
+import org.elvio.chess.eval.algo.PieceSquare;
+import org.elvio.chess.process.Evaluer;
 
 public class BoardUtils {
 
@@ -88,20 +92,8 @@ public class BoardUtils {
 
 	private BoardUtils(){}	
 	
-	public final static void miseEnPlaceDesPieces(Board board, boolean test, String configuration) {
-            if(test){
-                if(configuration == null){
-                    miseEnPlaceDesPiecesTest(board);
-                }else{
-                    miseEnPlaceDesPiecesTest(board, configuration);
-                }
-            }else{
-                miseEnPlaceDesPieces(board);		
-            }
-	}
-	
-        private final static void miseEnPlaceDesPieces(Board board) {
-                board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+	public final static void miseEnPlaceDesPieces(Board board) {
+		board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.B2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.C2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
 		board.put(BoardUtils.D2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
@@ -134,9 +126,11 @@ public class BoardUtils {
 		board.put(BoardUtils.F8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
 		board.put(BoardUtils.D8, Piece.creation(Piece.NOIR, Dame.getValueStatic()));
 		board.put(BoardUtils.E8, Piece.creation(Piece.NOIR, Roi.getValueStatic()));
-}
-	private final static void miseEnPlaceDesPiecesTest(Board board) {
+	}
+	
+	public final static void miseEnPlaceDesPiecesTest(Board board) {
 		board.put(BoardUtils.D4, Piece.creation(Piece.BLANC, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
+		
 		board.put(BoardUtils.E3, Piece.creation(Piece.BLANC, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
 		board.put(BoardUtils.E4, Piece.creation(Piece.NOIR, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
 		board.put(BoardUtils.E6, Piece.creation(Piece.NOIR, (byte) (Fou.getValueStatic()|Piece.A_DEJA_JOUE)));
@@ -146,10 +140,6 @@ public class BoardUtils {
 		board.put(BoardUtils.G5, Piece.creation(Piece.NOIR, (byte) (Tour.getValueStatic()|Piece.A_DEJA_JOUE)));
 		board.put(BoardUtils.G7, Piece.creation(Piece.NOIR, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
 		board.put(BoardUtils.H6, Piece.creation(Piece.NOIR, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
-	}
-        
-        private final static void miseEnPlaceDesPiecesTest(Board board, String configuration) {
-                creationBoard(board, configuration);		
 	}
 	
 	public final static boolean isPieceAdverseAtPosition(int positionAutre, int positionMoi, Board board){
@@ -164,14 +154,18 @@ public class BoardUtils {
 			return false;
 		}
 		
-		return(!Piece.isMemeCouleur(moi, autre));
+		if(!Piece.isMemeCouleur(moi, autre)){
+			return true;
+		}
+		
+		return false;
 	}
 	
 	public final static boolean isEnPositionInitial(Byte monEtat) {
 		return !comparerEtat(monEtat, Piece.A_DEJA_JOUE);
 	}
 
-	private static boolean comparerEtat(Byte monEtat, byte etat) {
+	private final static boolean comparerEtat(Byte monEtat, byte etat) {
 		if(monEtat==null){
 			return false;
 		}
@@ -190,6 +184,34 @@ public class BoardUtils {
 			return -1;
 
 		return (maPosition + (colonne << 3) + ligne);
+	}
+	
+	public final static boolean isCaseEnEchec(int position, Byte etat, Board board) {
+		List<Integer> positionsAttaquees = null;
+		if(board.getPositionsAttaquees() == null){
+			for(byte i = 0 ; i < 64 ; i++){
+				if(Piece.isDifferenteCouleur(board.get(i),etat)){
+					int positionCourante = i;
+					if(positionsAttaquees == null){
+						positionsAttaquees = Piece.getPositionsAttaques(positionCourante, board);
+					}else{
+						positionsAttaquees.addAll(Piece.getPositionsAttaques(positionCourante, board));
+					}
+				}
+			}
+			
+			board.setPositionsAttaquees(positionsAttaquees);
+			
+			if(positionsAttaquees != null && positionsAttaquees.contains(position)){
+				return true;
+			}
+		}else{
+			if(board.getPositionsAttaquees().contains(position)){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public final static int GetRepresentationByte(String valeurAConvertir){
@@ -220,7 +242,7 @@ public class BoardUtils {
 	public final static CoupARetenir PrendrePionEnPassant(int positionFinale, int positionInitiale, Byte enPositionInitiale, Board board) {
 		int positionMange = positionFinale - Piece.avancer(1, enPositionInitiale);
 		Byte pionMange = board.get(positionMange);
-		CoupARetenir coupARetenir = memoriserLeBoard(positionMange, pionMange, positionMange, pionMange, board);
+		CoupARetenir coupARetenir = retenirBoard(positionMange, pionMange, positionMange, pionMange, board);
 		board.remove(positionMange);	
 		return coupARetenir;
 	}
@@ -309,7 +331,7 @@ public class BoardUtils {
 			table[i>>3][modulo8(i)] = representation;
 		}
 		
-		String ligne;
+		String ligne = "";
 		for(int i = 0 ; i < 8 ; i++){
 			ligne="";
 			for(int j = 0 ; j < 8 ; j++){
@@ -319,9 +341,114 @@ public class BoardUtils {
 		}
 			
 	}
+	
+	public final static boolean isMate(Byte couleur, Board board){
+		BoardEvalue evaluation = Evaluer.negaMax(2, board, couleur, 0, new PieceSquare(), null);
 		
+		for(int position = 0 ; position < 64 ; position ++){
+			if(board.get(position) != null && Piece.isComme(board.get(position),Roi.getValueStatic()) && Piece.isMemeCouleur(board.get(position), couleur)){
+				if(!BoardUtils.isCaseEnEchec((byte) position, Piece.inverseCouleur(couleur), board)){
+					return false;
+				}
+			}
+		}
+		
+		System.out.println("eval mate " + evaluation.getScore() );
+		
+		if((evaluation.getScore() < -100000d)){
+			System.out.println("pas bon pour le blanc");
+		}else{
+			System.out.println("correct blanc");
+		}
+		
+		if((evaluation.getScore() > 100000d)){
+			System.out.println("pas bon pour le noir");
+		}else{
+			System.out.println("correct noir");
+		}
+		
+		if(Piece.isBlanc(couleur) && (evaluation.getScore() < -100000d) 
+				|| !Piece.isBlanc(couleur) && (evaluation.getScore() > 100000d)){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public final static boolean isNulle(byte couleur, Board board, PartieNulle evaluateurDePartieNulle){
+		if(isNullePar50CoupsOu3PositionsIdentiques(board, evaluateurDePartieNulle) || isNulleParPat(couleur, board)){
+			return true;
+		}
+		return false;
+	}
+	
+	private final static boolean isNullePar50CoupsOu3PositionsIdentiques(Board board, PartieNulle evaluateurDePartieNulle){
+		StringBuilder representationDunEchiquier = new StringBuilder();
+		if(board.getBoardSize()!=evaluateurDePartieNulle.getNbreDePieceSurLeGame()){
+			evaluateurDePartieNulle.setNbreDePieceSurLeGame(board.getBoardSize());
+			evaluateurDePartieNulle.setCoupJouePourAnnulerEn50Coups(0);
+			evaluateurDePartieNulle.setNbrePositionsIdentiques(new HashMap<String, Byte>());
+		}else{
+			TreeSet<Byte> positionOrdonnees = new TreeSet<Byte>(board.getPositions());
+			for(Byte position: positionOrdonnees) {
+				representationDunEchiquier.append(position).append(board.get(position));
+			}
+			evaluateurDePartieNulle.incrementCoupJouePourAnnulerEn50Coups();
+		}
+		
+		if(evaluateurDePartieNulle.getCoupJouePourAnnulerEn50Coups() > 49){
+			System.out.println("50 coups");
+			return true;
+		}
+		
+		if(evaluateurDePartieNulle.getNbrePositionsIdentiques(representationDunEchiquier.toString())==null){
+			evaluateurDePartieNulle.putNbrePositionsIdentiques(representationDunEchiquier.toString(), (byte)1);
+		}else{
+			evaluateurDePartieNulle.putNbrePositionsIdentiques(representationDunEchiquier.toString(), (byte)(evaluateurDePartieNulle.getNbrePositionsIdentiques(representationDunEchiquier.toString())+1));
+		}
+		
+		if(evaluateurDePartieNulle.getNbrePositionsIdentiques().values().contains((byte)3)){
+			System.out.println("3 repetitions");
+			return true;
+		}
+		return false;
+	}
+	
+	public final static boolean isNulleParPat(byte couleur, Board board){
+		
+		boolean pat = false;
+		for(Byte position : board.getPositions()){
+			if(Roi.isComme(position, Roi.getValueStatic()) && Piece.isMemeCouleur(board.get(position), couleur) && !isCaseEnEchec(position, couleur, board)){
+				if(isCaseNonJouablePourLeRoi(position, -1, -1, board)){
+					return 
+				}
+			}else{
+				return false;
+			}
+		}
+		board.setPositionsAttaquees(null);
+		System.out.println("pat");
+		return true;
+	}
+	
+	//a revoir la logique
+	private final static boolean isCaseNonJouablePourLeRoi(Byte position, int mvtX, int mvtY, Board board){
+		int positionDuRoiApresDeplacement;
+		Byte etatDuRoiApresDeplacement;
+		board.setPositionsAttaquees(null);		
+		if((positionDuRoiApresDeplacement = BoardUtils.getPosition(position, mvtX, mvtY)) != -1){
+			etatDuRoiApresDeplacement = board.get(positionDuRoiApresDeplacement);
+			if(etatDuRoiApresDeplacement != null && Piece.isDifferenteCouleur(board.get(position), etatDuRoiApresDeplacement) && !BoardUtils.isCaseEnEchec(positionDuRoiApresDeplacement, etatDuRoiApresDeplacement, board)){
+				return false;
+			}else if(etatDuRoiApresDeplacement == null && !BoardUtils.isCaseEnEchec(positionDuRoiApresDeplacement, etatDuRoiApresDeplacement, board)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public final static EtatDUnBoard getBoardApresUnCoup(int positionInitiale, Byte pieceEnPositionInitial, int positionFinale, Board board, EtatDUnBoard etat){
-		EtatDUnBoard etatDUnBoard;
+		EtatDUnBoard etatDUnBoard = null;
 		if(etat == null){
 			etatDUnBoard = creationEtatBoard(board);
 		}else{
@@ -342,12 +469,12 @@ public class BoardUtils {
 			// si le pion va dans une case vide, c est qu il avance ou fait une prise en passant, si la distance 
 			// parcouru sur le byte de position est plus grande que 2 cases, cest qu il change de colonne donc qu il 
 			// s agit d une prise en passant 
-			mouvementDePion(etatDUnBoard, positionInitiale, pieceEnPositionInitial, positionFinale, pieceEnPositionFinale, board);
+			iPionT(etatDUnBoard, positionInitiale, pieceEnPositionInitial, positionFinale, pieceEnPositionFinale, board);
 			
 		}else if(!Roi.isComme(pieceEnPositionInitial, Roi.getValueStatic())){
-			mouvementDeNoblesse(etatDUnBoard, positionInitiale, pieceEnPositionInitial, positionFinale, pieceEnPositionFinale, board);
+			iNormalT(etatDUnBoard, positionInitiale, pieceEnPositionInitial, positionFinale, pieceEnPositionFinale, board);
 		}else{
-			mouvementDuRoi(etatDUnBoard, positionInitiale, pieceEnPositionInitial, positionFinale, pieceEnPositionFinale, board);
+			iRoiT(etatDUnBoard, positionInitiale, pieceEnPositionInitial, positionFinale, pieceEnPositionFinale, board);
 		}
 		
 		return etatDUnBoard;
@@ -357,7 +484,7 @@ public class BoardUtils {
 		return new EtatDUnBoard(board.getPremierParent());
 	}
 
-	private static void mouvementDeNoblesse(EtatDUnBoard etatDUnBoard,
+	private static void iNormalT(EtatDUnBoard etatDUnBoard,
 			int positionInitiale, Byte enPositionInitial, int positionFinale, Byte enPositionFinale, Board board) {
 		addCoup(etatDUnBoard, bouger(positionInitiale, enPositionInitial, positionFinale, enPositionFinale, board));
 		addBoard(etatDUnBoard, board);
@@ -373,7 +500,7 @@ public class BoardUtils {
 	}
 
 	
-	private static void mouvementDePion(EtatDUnBoard etatDUnBoard,
+	private static void iPionT(EtatDUnBoard etatDUnBoard,
 			int positionInitiale, Byte enPositionInitiale, int positionFinale, Byte enPositionFinale, Board board) {
 		
 		if(board.get(positionFinale) == null && (positionFinale >> 3) != (positionInitiale >> 3)){
@@ -391,7 +518,7 @@ public class BoardUtils {
 		}
 	}
 	
-	private static void mouvementDuRoi(EtatDUnBoard etatDUnBoard, int positionInitiale, Byte enPositionInitial,
+	private static void iRoiT(EtatDUnBoard etatDUnBoard, int positionInitiale, Byte enPositionInitial,
 			int positionFinale, Byte enPositionFinal, Board board) {
 		etatDUnBoard.addCoupARetenir(bouger(positionInitiale, enPositionInitial, positionFinale, enPositionFinal, board));
 		int differentiel = positionFinale - positionInitiale;
@@ -426,7 +553,7 @@ public class BoardUtils {
 	}
 
 	public final static CoupARetenir bouger(int positionInitiale, Byte enPositionInitial, int positionFinale, Byte enPositionFinal, Board board) {
-		CoupARetenir coupsARetenir = memoriserLeBoard(positionInitiale, enPositionInitial, positionFinale, enPositionFinal, board);
+		CoupARetenir coupsARetenir = retenirBoard(positionInitiale, enPositionInitial, positionFinale, enPositionFinal, board);
 		byte etatUneFoisDeplace = enPositionInitial;
 		etatUneFoisDeplace |= Piece.A_DEJA_JOUE;
 		
@@ -443,7 +570,7 @@ public class BoardUtils {
 		return coupsARetenir;
 	}
 	
-	public final static CoupARetenir memoriserLeBoard(int positionInitiale, Byte pieceEnPositionInitiale, int positionFinale, Byte pieceEnPositionFinale, Board board){
+	public final static CoupARetenir retenirBoard(int positionInitiale, Byte pieceEnPositionInitiale, int positionFinale, Byte pieceEnPositionFinale, Board board){
 		
 		CoupARetenir coup = new CoupARetenir();
 		coup.setPositionCoupInitial(positionInitiale);
@@ -454,7 +581,7 @@ public class BoardUtils {
 		return coup;
 	}
 	
-	public final static Board revenirAuBoardInitial(Board board,			
+	public final static Board remonteLeCoup(Board board,			
 			EtatDUnBoard etat) {
 		for(CoupARetenir coupARetenir : etat.getCoupARetenir()){
 			board.put(coupARetenir.getPositionCoupFinal(), coupARetenir.getEtatCoupFinal());
@@ -465,6 +592,9 @@ public class BoardUtils {
 		return board;
 	}
 	
+	public final static int modulo8(int valeur){
+		return valeur & MASQUE_MODULO_8;
+	}
 	
 	public final static String getLitteralPosition(int position){
 		switch(position){
@@ -534,97 +664,6 @@ public class BoardUtils {
 			case 63 : return "H8";
 			default : return "inconnue";
 		}
-	}
-        
-        public static void creationBoard(Board board, String boardConfiguration){
-            List<PieceConfiguration> configuration = lire(boardConfiguration);
-            
-            for(PieceConfiguration piece : configuration){
-                board.creationPieceTest(piece.getPosition(), piece.getEtat());
-            }
-            
-        }
-        
-        public static String getBoardConfiguration(Board board){
-            Byte piece;
-            StringBuilder chaine = new StringBuilder();
-            for(int i = 0 ; i < 64 ; i++){
-                piece = board.get(i);
-                if(piece != null){
-                   chaine.append(";");
-                   chaine.append(i);                   
-                   chaine.append(";");
-                   chaine.append(piece);                   
-                }
-            }
-            return chaine.toString();
-        }
-
-        private static List<PieceConfiguration> lire(String boardConfiguration) {
-            String[] boardConfigurationSplit = boardConfiguration.split(";");
-            PieceConfiguration piece = new PieceConfiguration();
-            List<PieceConfiguration> configuration = new ArrayList<>();
-            
-            
-            for(String splity : boardConfigurationSplit){
-                if(splity.length()>0 && !piece.addConfiguration(splity)){
-                    configuration.add(piece);
-                    piece = new PieceConfiguration();
-                    piece.addConfiguration(splity);
-                }
-            }
-            
-            return configuration;
-        }
-        
-        private static class PieceConfiguration{
-            private Integer position;
-            private Byte etat;
-            
-            public boolean addConfiguration(String element){
-                if(position == null){
-                    position = Integer.valueOf(element);
-                }else if(etat == null){
-                    etat = Byte.valueOf(element);
-                }else{
-                    return false;
-                }                
-                return true;
-            }
-
-            /**
-             * @return the position
-             */
-            public Integer getPosition() {
-                return position;
-            }
-
-            /**
-             * @param position the position to set
-             */
-            public void setPosition(Integer position) {
-                this.position = position;
-            }
-
-            /**
-             * @return the etat
-             */
-            public Byte getEtat() {
-                return etat;
-            }
-
-            /**
-             * @param etat the etat to set
-             */
-            public void setEtat(Byte etat) {
-                this.etat = etat;
-            }
-            
-            
-        }
-        
-        public final static int modulo8(int valeur){
-		return valeur & MASQUE_MODULO_8;
 	}
 	
 }

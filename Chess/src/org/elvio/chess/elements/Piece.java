@@ -11,7 +11,7 @@ public abstract class Piece {
 	public static final byte BLANC = (new Integer(Integer.parseInt("00000001",2))).byteValue();
 	public static final byte NOIR = (new Integer(Integer.parseInt("00000000",2))).byteValue();
 	public static final byte A_AVANCER_DE_2 = (new Integer(Integer.parseInt("00000100",2))).byteValue();
-	public static final byte NE_VIENT_PAS_D_AVANCER_DE_2_CASES = (new Integer(Integer.parseInt("11111011",2))).byteValue();
+	public static final byte NA_PLUS_AVANCER_DE_2 = (new Integer(Integer.parseInt("11111011",2))).byteValue();
 	public static final byte A_DEJA_JOUE = (new Integer(Integer.parseInt("00000010",2))).byteValue();
 	public static final byte UN = 1;
 	public static final byte DEUX = 2;
@@ -26,7 +26,7 @@ public abstract class Piece {
 	protected static Byte value = (new Integer(Integer.parseInt(valeurBinaire,2))).byteValue();
 	
 	public Piece(Byte couleur) {
-		value = (byte) (value & couleur);
+		setValue(couleur);
 	}
 
 	public byte getValue() {
@@ -81,11 +81,6 @@ public abstract class Piece {
 	public final static boolean isComme(byte etat, byte pieceAComparer) {
 		return ((etat & pieceAComparer) == pieceAComparer);
 	}
-        
-        public final static boolean isComme(byte etat, byte pieceAComparer, byte couleur) {
-            int etatComparable = (pieceAComparer|couleur);
-		return ((etat & etatComparable) == etatComparable);
-	}
 	
 	public final static boolean isComme(Byte etat, byte pieceAComparer) {
 		return ((etat & pieceAComparer) == pieceAComparer);
@@ -94,6 +89,7 @@ public abstract class Piece {
 	public final static Byte creation(byte couleur, Byte piece) {
 		return (byte) (couleur | piece);
 	}
+	
 	
 	public static List<Integer> getPositionsAttaques(int caseCourante, Board board) {
 		Byte piece = board.get(caseCourante);
@@ -142,9 +138,5 @@ public abstract class Piece {
 	public final static boolean neChangePasDeColonne(int position, int maPosition) {
 		return maPosition>>3 == position>>3;
 	}
-        
-        public final static Byte nEstPasUnePriseEnPassant(Byte piece){
-            return (byte) (piece & NE_VIENT_PAS_D_AVANCER_DE_2_CASES);
-        }
 	
 }

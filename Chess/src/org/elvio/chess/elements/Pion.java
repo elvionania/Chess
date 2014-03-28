@@ -125,9 +125,5 @@ public class Pion extends Piece {
 	public static byte getValueStaticBlanc() {
 		return valueStaticBlanche;
 	}
-        
-        public final static boolean isComme(Byte etat) {
-		return ((etat & valueStatic) == valueStatic);
-	}
 	
 }

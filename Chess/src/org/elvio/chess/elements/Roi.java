@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.elvio.chess.util.BoardUtils;
-import org.elvio.chess.util.Regles;
 
 public class Roi extends Piece {
 	
@@ -111,13 +110,13 @@ public class Roi extends Piece {
 	
 	private static void addElementInResultat(List<Integer> resultat, Byte piece, Board board,
 			int position){		
-		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position))) && !Regles.isCaseEnEchec(position, piece, board)){
+		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position))) && !BoardUtils.isCaseEnEchec(position, piece, board)){
 			resultat.add(position);
 		}
 	}
 	
 	private static boolean isElementInResultat(Byte piece, Board board,	int position){		
-		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position))) && !Regles.isCaseEnEchec(position, piece, board)){
+		if(position != -1 && (board.get(position) == null || Piece.isDifferenteCouleur(piece, board.get(position))) && !BoardUtils.isCaseEnEchec(position, piece, board)){
 			return true;
 		}
 		return false;
@@ -147,13 +146,13 @@ public class Roi extends Piece {
 			return -1;
 		}
 		
-		if(Regles.isCaseEnEchec(positionInterstice2, piece, board)){
+		if(BoardUtils.isCaseEnEchec(positionInterstice2, piece, board)){
 			return -1;
 		}
-		if(Regles.isCaseEnEchec(maPosition, piece, board)){
+		if(BoardUtils.isCaseEnEchec(maPosition, piece, board)){
 			return -1;
 		}
-		if(Regles.isCaseEnEchec(positionInterstice1, piece, board)){
+		if(BoardUtils.isCaseEnEchec(positionInterstice1, piece, board)){
 			return -1;
 		}
 		
@@ -190,16 +189,16 @@ public class Roi extends Piece {
 			return -1;
 		}
 		
-		if(Regles.isCaseEnEchec(positionInterstice1, piece, board)){
+		if(BoardUtils.isCaseEnEchec(positionInterstice1, piece, board)){
 			return -1;
 		}
-		if(Regles.isCaseEnEchec(maPosition, piece, board)){
+		if(BoardUtils.isCaseEnEchec(maPosition, piece, board)){
 			return -1;
 		}
-		if(Regles.isCaseEnEchec(positionInterstice2, piece, board)){
+		if(BoardUtils.isCaseEnEchec(positionInterstice2, piece, board)){
 			return -1;
 		}
-		if(Regles.isCaseEnEchec(positionInterstice3, piece, board)){
+		if(BoardUtils.isCaseEnEchec(positionInterstice3, piece, board)){
 			return -1;
 		}
 		
