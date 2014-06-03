@@ -9,13 +9,12 @@ package org.elvio.chess.util;
 import java.util.HashMap;
 import java.util.List;
 import org.elvio.chess.elements.Board;
-import org.elvio.chess.elements.EtatDUnBoard;
-import org.elvio.chess.elements.PartieNulle;
-import org.elvio.chess.elements.Piece;
-import org.elvio.chess.elements.Pion;
-import org.elvio.chess.elements.Roi;
+import org.elvio.chess.process.EtatDUnBoard;
+import org.elvio.chess.elements.pieces.Piece;
+import org.elvio.chess.elements.pieces.Pion;
+import org.elvio.chess.elements.pieces.Roi;
 import org.elvio.chess.eval.algo.PieceSquare;
-import org.elvio.chess.process.Evaluer;
+import org.elvio.chess.process.NegaMax;
 
 /**
  *
@@ -62,8 +61,8 @@ public class Regles {
     private static boolean isNullePar50CoupsOu3PositionsIdentiques(Board board) {
         
         StringBuilder representationDunEchiquier = new StringBuilder();
-        if (board.getBoardSize() != evaluateurDePartieNulle.getNbreDePieceSurLeGame()) {
-            evaluateurDePartieNulle.setNbreDePieceSurLeGame(board.getBoardSize());
+        if (board.getNombreDePiecesEnJeu() != evaluateurDePartieNulle.getNbreDePieceSurLeGame()) {
+            evaluateurDePartieNulle.setNbreDePieceSurLeGame(board.getNombreDePiecesEnJeu());
             evaluateurDePartieNulle.setCoupJouePourAnnulerEn50Coups(0);
             evaluateurDePartieNulle.setNbrePositionsIdentiques(new HashMap<String, Byte>());
         } else {
@@ -165,7 +164,7 @@ public class Regles {
                 }
             }
         }
-        BoardEvalue evaluation = Evaluer.negaMax(2, board, couleur, 0, new PieceSquare(), null, false, null);
+        BoardEvalue evaluation = NegaMax.getBoardEvalue(2, board, couleur, 0, new PieceSquare(), null, false, null);
         System.out.println("eval mate " + evaluation.getScore());
         if (evaluation.getScore() < -100000.0) {
             System.out.println("pas bon pour le blanc");

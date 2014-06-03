@@ -1,8 +1,7 @@
 package org.elvio.chess.process;
 
 import org.elvio.chess.elements.Board;
-import org.elvio.chess.elements.Joueur;
-import org.elvio.chess.elements.Piece;
+import org.elvio.chess.elements.pieces.Piece;
 import org.elvio.chess.eval.algo.PS2;
 import org.elvio.chess.util.BoardUtils;
 import org.elvio.chess.util.Outils;
@@ -34,8 +33,8 @@ public class Jeu {
         etatDeLaPartie = StatutPartie.NON_FINIE;
         numeroDuCoup = 0;
         tempsAuCommencement = Outils.getTime();
-        joueurBlanc = new IntelligenceArtificielle(5, new PS2(), tempsEnMinute, Piece.BLANC);
-        joueurNoir = new IntelligenceArtificielle(3, new PS2(), tempsEnMinute, Piece.NOIR);
+        joueurBlanc = new IntelligenceArtificielle(5, new PS2(), new NegaMax(), tempsEnMinute, Piece.BLANC);
+        joueurNoir = new IntelligenceArtificielle(3, new PS2(), new NegaMax(), tempsEnMinute, Piece.NOIR);
         joueurBlanc.setTempsAuCommencement(tempsAuCommencement);
         joueurNoir.setTempsAuCommencement(tempsAuCommencement);
         
@@ -44,8 +43,7 @@ public class Jeu {
 
     // commence la partie
     public void partieCommence(){
-        // decouper cette methode 
-        // globaliser les variables
+        
         initialisationDeLaPartieEtDesJoueurs();
 
         while(etatDeLaPartie == StatutPartie.NON_FINIE){
@@ -108,9 +106,8 @@ public class Jeu {
         }
     }
 
-    // faire un isblanc et isnoir sur le joueur
     private StatutPartie savoirQuiAGagne(Joueur joueur, boolean estMate) {
-        if(Piece.isBlanc(joueur.getCouleur()) && estMate){
+        if(joueur.isBlanc() && estMate){
             return StatutPartie.GAGNEE_PAR_LES_NOIRS;
         }else{
             return StatutPartie.GAGNEE_PAR_LES_BLANCS;

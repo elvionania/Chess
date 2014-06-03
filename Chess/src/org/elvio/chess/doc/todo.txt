@@ -1,0 +1,25 @@
+multi threading
+
+extreme tubing
+    -- definition des strategie de parcours et approfondissement et elargissement
+
+defnition du framework genetique
+
+structuration en 4 parties
+    -- structures : board, pieces et leurs interactions
+    -- jeu : procédures et règles
+    -- graphe et parcours
+    -- évaluations
+    -- génétiques
+
+ou on en est
+
+2 structures : ArrayList, tableau de int, packaging 
+2 jeu : initial, regles séparés
+2 graphe : initial, pruning 
+4 evaluations : pieceSquare, pion passé, pion doublé, mobilité
+
+multithreading
+optimizedTubing
+framework génétique
+interfacage xboard

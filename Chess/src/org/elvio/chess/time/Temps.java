@@ -1,6 +1,6 @@
 package org.elvio.chess.time;
 
-import org.elvio.chess.elements.Piece;
+import org.elvio.chess.elements.pieces.Piece;
 
 public class Temps {
 

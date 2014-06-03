@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.elvio.chess.elements.Board;
-import org.elvio.chess.elements.EtatDUnBoard;
-import org.elvio.chess.elements.Joueur;
-import org.elvio.chess.elements.Piece;
+import org.elvio.chess.elements.pieces.Piece;
 import org.elvio.chess.util.BoardUtils;
 
 public class Humain extends Joueur {

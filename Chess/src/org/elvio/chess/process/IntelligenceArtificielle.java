@@ -3,8 +3,7 @@ package org.elvio.chess.process;
 import java.util.List;
 
 import org.elvio.chess.elements.Board;
-import org.elvio.chess.elements.Joueur;
-import org.elvio.chess.elements.Piece;
+import org.elvio.chess.elements.pieces.Piece;
 import org.elvio.chess.eval.algo.FonctionEvaluation;
 import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardEvalue;
@@ -13,19 +12,22 @@ import org.elvio.chess.util.Outils;
 public class IntelligenceArtificielle extends Joueur {
 
 	List<Board> boardAEvaluer;
-	private int profondeurMax = 5;
-	private final FonctionEvaluation algoDEvaluation;
+	private final int profondeurMax;
+	private final FonctionEvaluation algorythmeDEvaluation;
+        private final IEvaluer algorythmeDeParcours;
 	public static long boardCalcule;
 	private Integer scoreEncours = 0;
 	
 	public IntelligenceArtificielle(int profondeurDeCalculDuJoueur, 
-                    FonctionEvaluation algoDEvaluation, 
+                    FonctionEvaluation algorythmeDEvaluation,
+                    IEvaluer algorythmeDeParcours, 
                     int temps, 
                     Byte couleur) {
-		this.profondeurMax = profondeurDeCalculDuJoueur;
-		this.algoDEvaluation = algoDEvaluation;
-                this.temps = new Temps(temps);
-                this.couleur = couleur;
+            this.profondeurMax = profondeurDeCalculDuJoueur;
+            this.algorythmeDEvaluation = algorythmeDEvaluation;
+            this.temps = new Temps(temps);
+            this.couleur = couleur;
+            this.algorythmeDeParcours = algorythmeDeParcours;
 	}
 
 	@Override
@@ -33,36 +35,40 @@ public class IntelligenceArtificielle extends Joueur {
 		boardCalcule = 0;
 		temps.initAvantDeJouer(scoreEncours, numeroDuCoup);
 		BoardEvalue leMeilleurBoard = null;
+                Board boardPremierCoupDuMeilleurBoard = null;
 		long tempsInitial = Outils.getTime();
 		long tempsFinal;
 		long duree;
 				
+                //TODO le probleme de profondeur statique avec remise a zero du calcul                
+                // on analyse a chaque profondeur max, tant que le temps nous le permet
+                // si on a le temps on analyse le profondeur max suivante
 		for(int profondeurCourante = 3 ; profondeurCourante <= profondeurMax ; profondeurCourante++){
 			
-			leMeilleurBoard = Evaluer.negaMax(profondeurCourante, board, couleur, numeroDuCoup, algoDEvaluation, null, false, temps);
-			
-//			for(int i = 0 ; i < leMeilleurBoard.getCoupARetenir().size() ; i++){
-//				System.out.println("coup a retenir "+BoardUtils.getLitteralPosition(leMeilleurBoard.getCoupARetenir().get(i))+"-"+BoardUtils.getLitteralPosition(leMeilleurBoard.getCoupARetenir().get(++i)));
-//			}
+			leMeilleurBoard = algorythmeDeParcours.getBoardEvalue(profondeurCourante, board, couleur, numeroDuCoup, algorythmeDEvaluation, null, false, temps);
 			
 			tempsFinal = Outils.getTime();
 			duree = (tempsFinal-tempsInitial) / 1000;
-//			System.out.println("profondeur "+profondeurCourante+" parceldetemps "+temps.getParcelDeTemps()+" duree "+duree+" score "+leMeilleurBoard.getScore());
+                        
+                        // la gestion du temps du joueur nous sort de la boucle dès qu'on dépasse le temps autorisé
 			if(temps.getParcelDeTemps() < (duree*20)){
 				break;
 			}
 		}
                 
-		scoreEncours = leMeilleurBoard.getScore();
+                // si le board est valide on cherche le score du meilleur score
+                // et le premier coup de l'analyse amenant à ce score, qu'on transmet avec un premier coup null
+                if(leMeilleurBoard != null){
+                    scoreEncours = leMeilleurBoard.getScore();
+                    boardPremierCoupDuMeilleurBoard = leMeilleurBoard.getBoard().getPremierCoupAJouer();
+                    boardPremierCoupDuMeilleurBoard.setPremierCoupAJouer(null);
+                }
+                
+                // certains scores ne peuvent être interpreté que par l'absence d'un roi
 		if(scoreEncours > 100000 && Piece.isNoir(couleur) ||
-				scoreEncours < -100000 && Piece.isBlanc(couleur)){
+                    scoreEncours < -100000 && Piece.isBlanc(couleur)){
 			return null;
 		}
-		Board meilleurBoard = leMeilleurBoard.getBoard();
-		Board boardPremierCoupDuMeilleurBoard = meilleurBoard.getPremierCoupAJouer();
-		boardPremierCoupDuMeilleurBoard.setPremierCoupAJouer(null);
-
-//                System.out.println(BoardUtils.getBoardConfiguration(boardPremierCoupDuMeilleurBoard));
                 
 		return boardPremierCoupDuMeilleurBoard;
 	}
