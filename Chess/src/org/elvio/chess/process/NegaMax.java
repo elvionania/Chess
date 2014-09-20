@@ -10,14 +10,18 @@ import org.elvio.chess.util.BoardEvalue;
 import org.elvio.chess.util.BoardUtils;
 
 
-//TODO changer le nom de l interface de IEvaluer à IParcourir
-public class NegaMax implements IEvaluer { 
+//TODO changer le nom de l interface de IParcourir à IParcourir
+public class NegaMax implements IParcourir {
     
     private static StringBuilder chemin = new StringBuilder();
-    
+
 	private static BoardEvalue getEvaluation(Board board, int numeroDuCoup, FonctionEvaluation algoDEvaluation){
 			return new BoardEvalue(board, algoDEvaluation.getEval(board, numeroDuCoup));
 	}
+
+    public BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur){
+        return NegaMax.getBoardEvalueS(profondeur, board, couleur, numeroDuCoup, algoDEvaluation, maxParent, test, tempsDuJoueur);
+    }
 
     /**
      *
@@ -34,8 +38,7 @@ public class NegaMax implements IEvaluer {
      * @param tempsDuJoueur
      * @return
      */
-    @Override
-    public BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur){
+    public static BoardEvalue getBoardEvalueS(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur){
 		if (profondeur == 0){
 			IntelligenceArtificielle.boardCalcule++;
 			return getEvaluation(board, numeroDuCoup, algoDEvaluation);
@@ -58,44 +61,43 @@ public class NegaMax implements IEvaluer {
 			if(Piece.isMemeCouleur((piece = board.get(position)), couleur)){
 				board.setPositionsAttaquees(null);
 				for(int coup : Piece.getPositionsJouables(position, piece, board)){
-                                        enTest = (profondeur == 4 && coup == 14 && position == 10)||test;
+                    enTest = (profondeur == 4 && coup == 14 && position == 10)||test;
                                             
-                                        int max2 = -1000000000;
+                    int max2 = -1000000000;
 					etat = BoardUtils.getBoardApresUnCoup(position, piece, coup, board, etat);
-                                        for(Board enfant : etat.getBoards()){
-                                            if(etat.isRoiBlancDevore() || etat.isRoiNoirDevore()){
-                                                BoardEvalue evaluation = getEvaluation(enfant, numeroDuCoup, algoDEvaluation).clone();
-                                                Integer score = facteur * evaluation.getScore();
+                    for(Board enfant : etat.getBoards()){
+                        if(etat.isRoiBlancDevore() || etat.isRoiNoirDevore()){
+                            BoardEvalue evaluation = getEvaluation(enfant, numeroDuCoup, algoDEvaluation).clone();
+                            Integer score = facteur * evaluation.getScore();
 
-                                                if(score > max) {
-                                                    max = score;
-                                                    meilleurBoard = evaluation.clone();
-                                                    meilleurBoard.addCoupARetenir(position, coup);
-                                                }
+                            if(score > max) {
+                                max = score;
+                                meilleurBoard = evaluation.clone();
+                                meilleurBoard.addCoupARetenir(position, coup);
+                            }
 
 
-                                            }else{
-						enfant.creationPremierCoupAJouer(board);
-						BoardEvalue negamax = getBoardEvalue((profondeur - 1), enfant, Piece.inverseCouleur(couleur), numeroDuCoup, algoDEvaluation, (meilleurBoard==null?null:(facteur*max)), enTest, tempsDuJoueur);
-						Integer score;
-						if(negamax != null){
-							score = facteur * negamax.getScore();
-						}else{
-							continue;
+                        }else{
+                            enfant.creationPremierCoupAJouer(board);
+                            BoardEvalue negamax = getBoardEvalueS((profondeur - 1), enfant, Piece.inverseCouleur(couleur), numeroDuCoup, algoDEvaluation, (meilleurBoard==null?null:(facteur*max)), enTest, tempsDuJoueur);
+                            Integer score;
+                            if(negamax != null){
+                                score = facteur * negamax.getScore();
+                            }else{
+                                continue;
+                            }
+
+                            if (brancheCoupee = (maxParent != null && score > (facteur*maxParent))){
+                                break;
+                            }
+
+                            if(score > max) {
+                                max = score;
+                                meilleurBoard = negamax.clone();
+                                meilleurBoard.addCoupARetenir(position, coup);
+                            }
 						}
-						
-						if (brancheCoupee = (maxParent != null && score > (facteur*maxParent))){
-							break;
-						}
-						
-                                                if(score > max) {
-                                                    max = score;
-                                                    meilleurBoard = negamax.clone();
-                                                    meilleurBoard.addCoupARetenir(position, coup);
-						}
-						
-                                            }
-                                        }
+                    }
 										
 					BoardUtils.revenirAuBoardInitial(board, etat);
 					
@@ -103,13 +105,14 @@ public class NegaMax implements IEvaluer {
 						return null;
 					}
                                         
-                                        // comment recuperer le meilleur score du coup niv3....????
-                                        if(enTest && profondeur > 1){
-                                            System.out.println("profondeur "+profondeur+" coup "+BoardUtils.getLitteralPosition(position)+"-"+BoardUtils.getLitteralPosition(coup)+" score "+max2);
-                                        }
+                    // comment recuperer le meilleur score du coup niv3....????
+                    if(enTest && profondeur > 1){
+                        System.out.println("profondeur "+profondeur+" coup "+BoardUtils.getLitteralPosition(position)+"-"+BoardUtils.getLitteralPosition(coup)+" score "+max2);
+                    }
 				}
 			}
 		}
+
 		return meilleurBoard;
 	}
 

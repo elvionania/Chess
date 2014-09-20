@@ -15,8 +15,7 @@ import org.elvio.chess.util.BoardEvalue;
  *
  * @author elvionania
  */
-interface IEvaluer {
-    
+interface IParcourir {
+
     BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur);
-    
 }

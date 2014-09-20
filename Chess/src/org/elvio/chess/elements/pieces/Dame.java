@@ -14,8 +14,7 @@ public class Dame extends Piece {
 		super(couleur);
 	}
 
-	public static final String valeurBinaire = "00101000";
-	static final byte valueStatic = (new Integer(Integer.parseInt(valeurBinaire,2))).byteValue();
+	static final byte valueStatic = 0b00101000;
 	
 	public final static byte getValueStatic(){
 		return valueStatic;
@@ -362,8 +361,13 @@ public class Dame extends Piece {
 		
 		return mobilite;
 	}
-        
-        public final static boolean isComme(Byte etat) {
+
+    /**
+     * retourne true si le paramètre est un Dame
+     * @param etat
+     * @return
+     */
+    public final static boolean isComme(Byte etat) {
 		return ((etat & valueStatic) == valueStatic);
 	}
 

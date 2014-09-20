@@ -8,6 +8,7 @@ import org.elvio.chess.util.CoupsJouables;
 public abstract class Piece {
 
 	protected static final String valeurBinaire = "00000000";
+    protected static byte valueStatic = 0b00000000;
 	
 	public static final byte BLANC = 0b00000001;//(new Integer(Integer.parseInt("00000001",2))).byteValue();
 	public static final byte NOIR = (new Integer(Integer.parseInt("00000000",2))).byteValue();
@@ -57,7 +58,7 @@ public abstract class Piece {
 		return (couleur & BLANC) == BLANC;
 	}
         
-        public static boolean isNoir(byte couleur){
+    public static boolean isNoir(byte couleur){
 		return (couleur & BLANC) == NOIR;
 	}
 	
@@ -87,8 +88,8 @@ public abstract class Piece {
 		return ((etat & pieceAComparer) == pieceAComparer);
 	}
         
-        public final static boolean isComme(byte etat, byte pieceAComparer, byte couleur) {
-            int etatComparable = (pieceAComparer|couleur);
+    public final static boolean isComme(byte etat, byte pieceAComparer, byte couleur) {
+        int etatComparable = (pieceAComparer|couleur);
 		return ((etat & etatComparable) == etatComparable);
 	}
 	
@@ -96,46 +97,30 @@ public abstract class Piece {
 		return ((etat & pieceAComparer) == pieceAComparer);
 	}
 	
-	public final static Byte creation(byte couleur, Byte piece) {
-		return (byte) (couleur | piece);
+	public final static Byte creation(Byte piece, byte couleur, byte mouvement) {
+		return (byte) (couleur | piece | mouvement);
 	}
-	
-//	public static List<Integer> getPositionsAttaques(int caseCourante, Board board) {
-//		Byte piece = board.get(caseCourante);
-//		if(Piece.isComme(piece, Pion.getValueStatic())){
-//			return Pion.getPositionsAttaques(caseCourante, piece, board);
-//		}else if(Piece.isComme(piece, Cavalier.getValueStatic())){
-//			return Cavalier.getPositionsAttaques(caseCourante, board);
-//		}else if(Piece.isComme(piece, Fou.getValueStatic())){
-//			return Fou.getPositionsAttaques(caseCourante, piece, board);
-//		}else if(Piece.isComme(piece, Tour.getValueStatic())){
-//			return Tour.getPositionsAttaques(caseCourante, piece, board);
-//		}else if(Piece.isComme(piece, Roi.getValueStatic())){
-//			return Roi.getPositionsAttaques(caseCourante, piece, board);
-//		}else if(Piece.isComme(piece, Dame.getValueStatic())){
-//			return Dame.getPositionsAttaques(caseCourante, piece, board);
-//		}
-//		return null;
-//	}
 
-	public static List<Integer> getPositionsJouables(int caseCourante, Byte piece, Board board) {	
-			if(Piece.isComme(piece, Pion.getValueStatic())){
-				return Pion.getPositionsJouables(caseCourante, piece, board);
-			}else if(Piece.isComme(piece, Cavalier.getValueStatic())){
-				return Cavalier.getPositionsJouables(caseCourante, piece, board);
-			}else if(Piece.isComme(piece, Fou.getValueStatic())){
-				return Fou.getPositionsJouables(caseCourante, piece, board);
-			}else if(Piece.isComme(piece, Tour.getValueStatic())){
-				return Tour.getPositionsJouables(caseCourante, piece, board);
-			}else if(Piece.isComme(piece, Roi.getValueStatic())){
-				return Roi.getPositionsJouables(caseCourante, piece, board);
-			}else if(Piece.isComme(piece, Dame.getValueStatic())){
-				return Dame.getPositionsJouables(caseCourante, piece, board);
-			}
+    public final static Byte creation(Byte piece, byte couleur) {
+        return (byte) (couleur | piece);
+    }
+
+	public static List<Integer> getPositionsJouables(int caseCourante, Byte piece, Board board) {
+        if(Piece.isComme(piece, Pion.getValueStatic())){
+            return Pion.getPositionsJouables(caseCourante, piece, board);
+        }else if(Piece.isComme(piece, Cavalier.getValueStatic())){
+            return Cavalier.getPositionsJouables(caseCourante, piece, board);
+        }else if(Piece.isComme(piece, Fou.getValueStatic())){
+            return Fou.getPositionsJouables(caseCourante, piece, board);
+        }else if(Piece.isComme(piece, Tour.getValueStatic())){
+            return Tour.getPositionsJouables(caseCourante, piece, board);
+        }else if(Piece.isComme(piece, Roi.getValueStatic())){
+            return Roi.getPositionsJouables(caseCourante, piece, board);
+        }else if(Piece.isComme(piece, Dame.getValueStatic())){
+            return Dame.getPositionsJouables(caseCourante, piece, board);
+        }
 		return null;
 	}
-	
-	
 
 	public final static Byte inverseCouleur(Byte couleur) {
 		if(isBlanc(couleur)){
@@ -148,8 +133,8 @@ public abstract class Piece {
 		return maPosition>>3 == position>>3;
 	}
         
-        public final static Byte nEstPasUnePriseEnPassant(Byte piece){
-            return (byte) (piece & NE_VIENT_PAS_D_AVANCER_DE_2_CASES);
-        }
-	
+    public final static Byte nEstPasUnePriseEnPassant(Byte piece){
+        return (byte) (piece & NE_VIENT_PAS_D_AVANCER_DE_2_CASES);
+    }
+
 }

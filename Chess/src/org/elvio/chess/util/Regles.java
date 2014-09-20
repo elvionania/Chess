@@ -37,14 +37,14 @@ public class Regles {
         List<Integer> positionsAttaquees = null;
         
         if (board.getPositionsAttaquees() == null) {
-            trouverLesPositionsAttaquees(board, couleur, positionsAttaquees);
+            positionsAttaquees = trouverLesPositionsAttaquees(board, couleur, positionsAttaquees);
             board.setPositionsAttaquees(positionsAttaquees);
             
             return (positionsAttaquees != null && positionsAttaquees.contains(position));            
         } else return (board.isPositionAttaquee(position));
     }
 
-    private static void trouverLesPositionsAttaquees(Board board, Byte couleur, List<Integer> positionsAttaquees) {
+    private static List<Integer> trouverLesPositionsAttaquees(Board board, Byte couleur, List<Integer> positionsAttaquees) {
         for (int  positionCourante = 0; positionCourante < 64; positionCourante++) {
             if (Piece.isDifferenteCouleur(board.get(positionCourante), couleur)) {
                 if (positionsAttaquees == null) {
@@ -54,6 +54,7 @@ public class Regles {
                 }
             }
         }
+        return positionsAttaquees;
     }
 
     
@@ -87,31 +88,36 @@ public class Regles {
         return false;
     }
 
+    /**
+     * retourne true si le roi est pat
+     * @param board
+     * @param couleur
+     * @return
+     */
     public static boolean isRoiEnPat(Board board, byte couleur) {
+        boolean pat = true;
+        List<Integer> coupsJouables;
         Byte piece;
+
+        if(isRoiEnEchec(board, couleur)) return false;
+
         for (int position : board.getPositionsDesPieces()) {
             if (Piece.isMemeCouleur(board.get(position), couleur)) {
                 piece = board.get(position);
-                for (int coup : Piece.getPositionsJouables(position, piece, board)) {
-                    EtatDUnBoard etatBoard = BoardUtils.getBoardApresUnCoup(position, piece, coup, board, null);
-                    for (Board newBoard : etatBoard.getBoards()) {
-                        for (int nbPosition : newBoard.getPositionsDesPieces()) {
-                            byte pieceANbPosition = newBoard.get(nbPosition);
-                            if (Roi.isComme(pieceANbPosition, Roi.getValueStatic(), couleur)) {
-                                if (!Regles.isCaseEnEchec(nbPosition, newBoard.get(nbPosition), newBoard)) {
-                                    BoardUtils.revenirAuBoardInitial(board, etatBoard);
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    BoardUtils.revenirAuBoardInitial(board, etatBoard);
-                }
+                coupsJouables = Piece.getPositionsJouables(position, piece, board);
+                if(coupsJouables.size() > 0) return false;
             }
         }
+
         return true;
     }
 
+    /**
+     * retourne true si le roi est en echec
+     * @param board
+     * @param couleur
+     * @return
+     */
     public static boolean isRoiEnEchec(Board board, byte couleur) {
         for (int position : board.getPositionsDesPieces()) {
             byte piece = board.get(position);
@@ -151,7 +157,7 @@ public class Regles {
     }
 
     public static final boolean isNulle(byte couleur, Board board) {
-        return isNullePar50CoupsOu3PositionsIdentiques(board) || isNulleParPat(couleur, board);
+        return isNullePar50CoupsOu3PositionsIdentiques(board) || isNulleParPat(Piece.inverseCouleur(couleur), board);
     }
 
     public static final boolean isMate(Byte couleur, Board board) {
@@ -164,19 +170,21 @@ public class Regles {
                 }
             }
         }
-        BoardEvalue evaluation = NegaMax.getBoardEvalue(2, board, couleur, 0, new PieceSquare(), null, false, null);
-        System.out.println("eval mate " + evaluation.getScore());
-        if (evaluation.getScore() < -100000.0) {
-            System.out.println("pas bon pour le blanc");
-        } else {
-            System.out.println("correct blanc");
-        }
-        if (evaluation.getScore() > 100000.0) {
-            System.out.println("pas bon pour le noir");
-        } else {
-            System.out.println("correct noir");
-        }
-        return Piece.isBlanc(couleur) && (evaluation.getScore() < -100000.0) || !Piece.isBlanc(couleur) && (evaluation.getScore() > 100000.0);
+        BoardEvalue evaluation = NegaMax.getBoardEvalueS(2, board, couleur, 0, new PieceSquare(), null, false, null);
+        System.out.println("roi "+(Piece.isBlanc(couleur)?"blanc":"noir")+(evaluation.isRoiMort(couleur)?" ":" n'")+"est mat!");
+//        System.out.println("eval mate " + evaluation.getScore());
+//        if (evaluation.getScore() < -100000.0) {
+//            System.out.println("pas bon pour le blanc");
+//        } else {
+//            System.out.println("correct blanc");
+//        }
+//        if (evaluation.getScore() > 100000.0) {
+//            System.out.println("pas bon pour le noir");
+//        } else {
+//            System.out.println("correct noir");
+//        }
+        return evaluation.isRoiMort(couleur);
+        //return Piece.isBlanc(couleur) && (evaluation.getScore() < -100000.0) || !Piece.isBlanc(couleur) && (evaluation.getScore() > 100000.0);
     }
     
     public static void initialisationDesPrisesEnPassant(byte couleur, Board board) {

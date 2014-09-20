@@ -10,10 +10,8 @@ import org.elvio.chess.util.CoupsJouables;
 
 public class Pion extends Piece {
 	
-	public static final String valeurBinaire = "01100000";
-	public static final String valeurBinaireBlanche = "01100001";
-	static final byte valueStatic = (new Integer(Integer.parseInt(valeurBinaire,2))).byteValue();
-	static final byte valueStaticBlanche = (new Integer(Integer.parseInt(valeurBinaireBlanche,2))).byteValue();
+	static final byte valueStatic = 0b01100000;
+	static final byte valueStaticBlanche = 0b01100001;
 	
 	public Pion(byte couleur) {
 		super(couleur);
@@ -22,7 +20,8 @@ public class Pion extends Piece {
 	public final static byte getValueStatic(){
 		return valueStatic;
 	}
-	
+
+    //todo la methode avancer ne l'est que pur le pion
 	public static List<Integer> getPositionsAttaques(int maPosition, Byte maPiece, Board board) {
 		List<Integer> cheminsAttaquables = new ArrayList<>();
 		int avance = avancer(1, maPiece);
@@ -127,8 +126,13 @@ public class Pion extends Piece {
 	public static byte getValueStaticBlanc() {
 		return valueStaticBlanche;
 	}
-        
-        public final static boolean isComme(Byte etat) {
+
+    /**
+     * retourne true si le paramètre est un Pion
+     * @param etat
+     * @return
+     */
+    public final static boolean isComme(Byte etat) {
 		return ((etat & valueStatic) == valueStatic);
 	}
 	

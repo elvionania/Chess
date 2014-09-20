@@ -48,6 +48,8 @@ public class BoardEvalue {
 		coupARetenir.add(coup);
 	}
 	
-	
+	public boolean isRoiMort(byte couleur){
+        return board.isRoiMort(couleur);
+    }
 	
 }

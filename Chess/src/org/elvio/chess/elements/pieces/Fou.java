@@ -13,8 +13,7 @@ public class Fou extends Piece {
 		super(couleur);
 	}
 
-	public static final String valeurBinaire = "01001000";
-	static final byte valueStatic = (new Integer(Integer.parseInt(valeurBinaire,2))).byteValue();
+	static final byte valueStatic = 0b01001000;
 	
 	public final static byte getValueStatic(){
 		return valueStatic;
@@ -213,8 +212,13 @@ public class Fou extends Piece {
 		}
 		return mobilite;
 	}
-        
-        public final static boolean isComme(Byte etat) {
+
+    /**
+     * retourne true si le paramètre est un Fou
+     * @param etat
+     * @return
+     */
+    public final static boolean isComme(Byte etat) {
 		return ((etat & valueStatic) == valueStatic);
 	}
 	

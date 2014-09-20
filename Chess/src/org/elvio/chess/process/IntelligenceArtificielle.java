@@ -14,13 +14,13 @@ public class IntelligenceArtificielle extends Joueur {
 	List<Board> boardAEvaluer;
 	private final int profondeurMax;
 	private final FonctionEvaluation algorythmeDEvaluation;
-        private final IEvaluer algorythmeDeParcours;
+        private final IParcourir algorythmeDeParcours;
 	public static long boardCalcule;
 	private Integer scoreEncours = 0;
 	
 	public IntelligenceArtificielle(int profondeurDeCalculDuJoueur, 
                     FonctionEvaluation algorythmeDEvaluation,
-                    IEvaluer algorythmeDeParcours, 
+                    IParcourir algorythmeDeParcours,
                     int temps, 
                     Byte couleur) {
             this.profondeurMax = profondeurDeCalculDuJoueur;

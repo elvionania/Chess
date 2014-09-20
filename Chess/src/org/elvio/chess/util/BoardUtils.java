@@ -88,70 +88,71 @@ public class BoardUtils {
 
 	private BoardUtils(){}	
 	
-	public final static void miseEnPlaceDesPieces(Board board, boolean test, String configuration) {
-            if(test){
-                if(configuration == null){
-                    miseEnPlaceDesPiecesTest(board);
-                }else{
-                    miseEnPlaceDesPiecesTest(board, configuration);
-                }
-            }else{
-                miseEnPlaceDesPieces(board);		
-            }
+	public final static void miseEnPlaceDesPieces(Board board, String configuration, boolean configurationStatic) {
+        if(configurationStatic) setBoard(board, creationDUnBoardConfigure());
+        else{
+            if(configuration == null)   miseEnPlaceDesPieces(board);
+            else    setBoard(board, configuration);
+        }
 	}
-	
-        public final static void miseEnPlaceDesPieces(Board board) {
-                board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.B2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.C2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.D2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.E2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.F2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.G2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.H2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
-		board.put(BoardUtils.A1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
-		board.put(BoardUtils.H1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
-		board.put(BoardUtils.B1, Piece.creation(Piece.BLANC, Cavalier.getValueStatic()));
-		board.put(BoardUtils.G1, Piece.creation(Piece.BLANC, Cavalier.getValueStatic()));
-		board.put(BoardUtils.C1, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
-		board.put(BoardUtils.F1, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
-		board.put(BoardUtils.D1, Piece.creation(Piece.BLANC, Dame.getValueStatic()));
-		board.put(BoardUtils.E1, Piece.creation(Piece.BLANC, Roi.getValueStatic()));
-		
-		board.put(BoardUtils.A7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.B7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.C7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.D7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.E7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.F7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.G7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.H7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.A8, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
-		board.put(BoardUtils.H8, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
-		board.put(BoardUtils.B8, Piece.creation(Piece.NOIR, Cavalier.getValueStatic()));
-		board.put(BoardUtils.G8, Piece.creation(Piece.NOIR, Cavalier.getValueStatic()));
-		board.put(BoardUtils.C8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
-		board.put(BoardUtils.F8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
-		board.put(BoardUtils.D8, Piece.creation(Piece.NOIR, Dame.getValueStatic()));
-		board.put(BoardUtils.E8, Piece.creation(Piece.NOIR, Roi.getValueStatic()));
-}
-	private final static void miseEnPlaceDesPiecesTest(Board board) {
-		board.put(BoardUtils.D4, Piece.creation(Piece.BLANC, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.E3, Piece.creation(Piece.BLANC, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.E4, Piece.creation(Piece.NOIR, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.E6, Piece.creation(Piece.NOIR, (byte) (Fou.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.F5, Piece.creation(Piece.NOIR, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.F7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
-		board.put(BoardUtils.G2, Piece.creation(Piece.BLANC, (byte) (Tour.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.G5, Piece.creation(Piece.NOIR, (byte) (Tour.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.G7, Piece.creation(Piece.NOIR, (byte) (Roi.getValueStatic()|Piece.A_DEJA_JOUE)));
-		board.put(BoardUtils.H6, Piece.creation(Piece.NOIR, (byte) (Pion.getValueStatic()|Piece.A_DEJA_JOUE)));
+
+    //todo mettre le get valuestatic dans la methode creation!!!
+    //todo degager la reference inutile a boardutils on y est dedans!!!
+    //todo faire une reference a blanc et noir dans une constante referencant Piece!!!
+    public final static void miseEnPlaceDesPieces(Board board) {
+        board.put(BoardUtils.A2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.B2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.C2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.D2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.E2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.F2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.G2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.H2, Piece.creation(Piece.BLANC, Pion.getValueStatic()));
+        board.put(BoardUtils.A1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
+        board.put(BoardUtils.H1, Piece.creation(Piece.BLANC, Tour.getValueStatic()));
+        board.put(BoardUtils.B1, Piece.creation(Piece.BLANC, Cavalier.getValueStatic()));
+        board.put(BoardUtils.G1, Piece.creation(Piece.BLANC, Cavalier.getValueStatic()));
+        board.put(BoardUtils.C1, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
+        board.put(BoardUtils.F1, Piece.creation(Piece.BLANC, Fou.getValueStatic()));
+        board.put(BoardUtils.D1, Piece.creation(Piece.BLANC, Dame.getValueStatic()));
+        board.put(BoardUtils.E1, Piece.creation(Piece.BLANC, Roi.getValueStatic()));
+
+        board.put(BoardUtils.A7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.B7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.C7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.D7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.E7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.F7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.G7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.H7, Piece.creation(Piece.NOIR, Pion.getValueStatic()));
+        board.put(BoardUtils.A8, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
+        board.put(BoardUtils.H8, Piece.creation(Piece.NOIR, Tour.getValueStatic()));
+        board.put(BoardUtils.B8, Piece.creation(Piece.NOIR, Cavalier.getValueStatic()));
+        board.put(BoardUtils.G8, Piece.creation(Piece.NOIR, Cavalier.getValueStatic()));
+        board.put(BoardUtils.C8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
+        board.put(BoardUtils.F8, Piece.creation(Piece.NOIR, Fou.getValueStatic()));
+        board.put(BoardUtils.D8, Piece.creation(Piece.NOIR, Dame.getValueStatic()));
+        board.put(BoardUtils.E8, Piece.creation(Piece.NOIR, Roi.getValueStatic()));
+    }
+
+    /**
+     * dans le cadre de test cette methode met en place les pieces
+     */
+	private final static String creationDUnBoardConfigure() {
+        Board board = new Board();
+        board.put(BoardUtils.C2, Piece.creation(Roi.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.G2, Piece.creation(Pion.getValueStatic(), Piece.BLANC));
+        board.put(BoardUtils.A3, Piece.creation(Pion.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.B4, Piece.creation(Pion.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.C4, Piece.creation(Roi.getValueStatic(), Piece.NOIR, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.F4, Piece.creation(Pion.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.H4, Piece.creation(Pion.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.F5, Piece.creation(Tour.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.H5, Piece.creation(Pion.getValueStatic(), Piece.NOIR, Piece.A_DEJA_JOUE));
+        board.put(BoardUtils.H6, Piece.creation(Fou.getValueStatic(), Piece.BLANC, Piece.A_DEJA_JOUE));
+        return getBoardConfiguration(board);
 	}
-        
-        private final static void miseEnPlaceDesPiecesTest(Board board, String configuration) {
-                creationBoard(board, configuration);		
-	}
-	
+
 	public final static boolean isPieceAdverseAtPosition(int positionAutre, int positionMoi, Board board){
 		
 		if(positionAutre == -1){
@@ -536,11 +537,11 @@ public class BoardUtils {
 		}
 	}
         
-        public static void creationBoard(Board board, String boardConfiguration){
+        public static void setBoard(Board board, String boardConfiguration){
             List<PieceConfiguration> configuration = lire(boardConfiguration);
             
             for(PieceConfiguration piece : configuration){
-                board.creationPieceTest(piece.getPosition(), piece.getEtat());
+                board.put(piece.getPosition(), piece.getEtat());
             }
             
         }
