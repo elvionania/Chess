@@ -1,0 +1,37 @@
+multi threading
+
+extreme tubing
+    -- definition des strategie de parcours et approfondissement et elargissement
+
+extraire les interfaces
+-gestionDuTemps
+-algoDeParcours
+-algoDEvaluation
+
+penser au framework génétique
+-gestion du temps
+-gestion du parcours
+-gestion de l'evaluation
+
+interface xboard
+
+penser au cadre de competition genetique
+creation d'un profil
+gestion des parties
+gestion des resultats
+algo de determination d'un chamion et des lignées
+
+creation du core
+tout ce qui n'est pas algo parcour, temps et eval
+
+implementation de la variabilisation genetique
+
+multithreading
+
+implementation de la creation de joueur et de leur stockage
+
+optimizedTubing
+
+implementation d'un coucours de joueurs et sauvegarde des meilleurs
+
+
