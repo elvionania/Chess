@@ -2,12 +2,12 @@ package org.elvio.chess.process;
 
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.pieces.Piece;
-import org.elvio.chess.time.Temps;
+import org.elvio.chess.time.IGestionDuTemps;
 
 public abstract class Joueur {
 	
 	protected Byte couleur;
-        protected Temps temps;
+        protected IGestionDuTemps temps;
         protected long tempsAuCommencement;
 
 	public void setCouleur(byte couleur) {
@@ -30,7 +30,7 @@ public abstract class Joueur {
             return !Piece.isBlanc(couleur);
         }
         
-        public Temps getTemps(){
+        public IGestionDuTemps getTemps(){
             return temps;
         }
 	

@@ -9,8 +9,8 @@ import java.util.List;
 import org.elvio.chess.util.BoardUtils;
 
 /**
- * repésentation logique d'un board d'échec
- * s'appuyant sur une représentation en tableau de byte
+ * rep??sentation logique d'un board d'??chec
+ * s'appuyant sur une repr??sentation en tableau de byte
  */
 public class Board extends IBoard{
 
@@ -27,7 +27,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * constructeur pour creer un board à partir d un board existant
+     * constructeur pour creer un board ?? partir d un board existant
      * @param board 
      */
     private Board(byte[] board){
@@ -35,7 +35,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * externalisation de la remise à zéro du board et de la mise en place des pieces
+     * externalisation de la remise ?? z??ro du board et de la mise en place des pieces
      */
     public void initialisation(){
         miseAVideDuBoard();
@@ -43,7 +43,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * externalisation de la remise à zéro du board et de la mise en place des pieces suivant une configuration
+     * externalisation de la remise ?? z??ro du board et de la mise en place des pieces suivant une configuration
      * particuliere
      */
     public void initialisation(String configuration){
@@ -52,7 +52,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * externalisation de la remise à zéro du board et de la mise en place des pieces suivant une configuration
+     * externalisation de la remise ?? z??ro du board et de la mise en place des pieces suivant une configuration
      * particuliere
      */
     public void initialisation(boolean configurationStatique){
@@ -61,7 +61,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * vide totalement un échèquier
+     * vide totalement un ??ch??quier
      */
     private void miseAVideDuBoard() {
         for(int i = 0 ; i < 64 ; i++){
@@ -70,8 +70,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * place une pièce sur l'échéquier
-     * ou vide une case de l'échiquier
+     * place une pi??ce sur l'??ch??quier
+     * ou vide une case de l'??chiquier
      * @param position
      * @param etat
      */
@@ -84,7 +84,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * obtient le contenu d'une case de l'échiquier
+     * obtient le contenu d'une case de l'??chiquier
      * retourne null en cas de position impossible ou de case vide
      *
      * @param position
@@ -109,7 +109,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * retourne la liste des positions des pièces sur l'échéquier
+     * retourne la liste des positions des pi??ces sur l'??ch??quier
      * @return
      */
     public final Collection<Integer> getPositionsDesPieces(){
@@ -123,8 +123,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * retourne le premier à jouer sous forme du board d'alors
-     * lors de la sélection de la meilleur variante, il s'agit du coup initiant cette variante
+     * retourne le premier ?? jouer sous forme du board d'alors
+     * lors de la s??lection de la meilleur variante, il s'agit du coup initiant cette variante
      * @return
      */
     public Board getPremierCoupAJouer() {
@@ -132,8 +132,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * mémorise le premier coup à jouer sous forme du board d'alors
-     * lors de la sélection de la meilleur variante, il s'agit du coup initiant cette variante
+     * m??morise le premier coup ?? jouer sous forme du board d'alors
+     * lors de la s??lection de la meilleur variante, il s'agit du coup initiant cette variante
      * @param premierCoupAJouer
      */
     public void setPremierCoupAJouer(Board premierCoupAJouer) {
@@ -141,8 +141,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * determine le le board du premier coup à jouer
-     * lors de la sélection de la meilleur variante, il s'agit du coup initiant cette variante
+     * determine le le board du premier coup ?? jouer
+     * lors de la s??lection de la meilleur variante, il s'agit du coup initiant cette variante
      * @param parent
      */
     public void creationPremierCoupAJouer(Board parent) {
@@ -154,7 +154,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * donne le nombre de pièces en jeu
+     * donne le nombre de pi??ces en jeu
      * @return
      */
     public int getNombreDePiecesEnJeu() {
@@ -168,8 +168,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * duplication d'un board avec le souvenir du premier coup à jouer
-     * sert pour l'évaluation
+     * duplication d'un board avec le souvenir du premier coup ?? jouer
+     * sert pour l'??valuation
      * @return
      */
     public final Board clone(){
@@ -183,8 +183,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * duplication d'un board sans le souvenir du premier coup à jouer
-     * sert dans la construction de l'arbre de parcours des possibilités
+     * duplication d'un board sans le souvenir du premier coup ?? jouer
+     * sert dans la construction de l'arbre de parcours des possibilit??s
      * @return
      */
     private Board cloneSansPremierCoupAJouer() {
@@ -192,7 +192,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * retourne la liste des positions qui sont sous la possible occupation d'une pièce au prochain coup
+     * retourne la liste des positions qui sont sous la possible occupation d'une pi??ce au prochain coup
      * @return
      */
     public List<Integer> getPositionsAttaquees() {
@@ -200,7 +200,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * indique si une position est sous la possible occupation d'une pièce au prochain coup
+     * indique si une position est sous la possible occupation d'une pi??ce au prochain coup
      * @param position
      * @return
      */
@@ -209,7 +209,7 @@ public class Board extends IBoard{
     }
 
     /**
-     * enregistre la liste des positions qui sont sous la possible occupation d'une pièce au prochain coup
+     * enregistre la liste des positions qui sont sous la possible occupation d'une pi??ce au prochain coup
      * @param positionsAttaquees
      */
     public void setPositionsAttaquees(List<Integer> positionsAttaquees) {
@@ -217,8 +217,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * donne les positions attaquées par la pièce se trouvant à la position donnée
-     * si la position ne contient pas de pièce, on retourne null
+     * donne les positions attaqu??es par la pi??ce se trouvant ?? la position donn??e
+     * si la position ne contient pas de pi??ce, on retourne null
      * @param caseCourante
      * @return
      */
@@ -235,8 +235,8 @@ public class Board extends IBoard{
     }
 
     /**
-     * indique si le roi est mangé
-     * méthode pratique pour l'évaluation d'un mat
+     * indique si le roi est mang??
+     * m??thode pratique pour l'??valuation d'un mat
      * @param couleur
      * @return
      */

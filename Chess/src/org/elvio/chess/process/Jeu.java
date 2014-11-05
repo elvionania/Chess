@@ -3,13 +3,14 @@ package org.elvio.chess.process;
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.pieces.Piece;
 import org.elvio.chess.eval.algo.PS2;
+import org.elvio.chess.time.GestionDuTemps;
 import org.elvio.chess.util.BoardUtils;
 import org.elvio.chess.util.Outils;
 import org.elvio.chess.util.Regles;
 import org.elvio.chess.util.StatutPartie;
 
 /**
- * met en place l'ensemble du processus de jeu d'une partie d'échecs entre deux joueurs
+ * met en place l'ensemble du processus de jeu d'une partie d'��checs entre deux joueurs
  */
 public class Jeu {
 
@@ -52,8 +53,8 @@ public class Jeu {
         etatDeLaPartie = StatutPartie.NON_FINIE;
         numeroDuCoup = 0;
         tempsAuCommencement = Outils.getTime();
-        joueurBlanc = new IntelligenceArtificielle(5, new PS2(), new NegaMax(), tempsEnMinute, Piece.BLANC);
-        joueurNoir = new IntelligenceArtificielle(3, new PS2(), new NegaMax(), tempsEnMinute, Piece.NOIR);
+        joueurBlanc = new IntelligenceArtificielle(5, new PS2(), new NegaMax(), new GestionDuTemps(tempsEnMinute), Piece.BLANC);
+        joueurNoir = new IntelligenceArtificielle(3, new PS2(), new NegaMax(), new GestionDuTemps(tempsEnMinute), Piece.NOIR);
         joueurBlanc.setTempsAuCommencement(tempsAuCommencement);
         joueurNoir.setTempsAuCommencement(tempsAuCommencement);
 
@@ -66,7 +67,7 @@ public class Jeu {
      * sequence de jeu d'un joueur
      * prepare le jeu au coup
      * le joueur joue et donne le board a jour
-     * l'etat de la partie est mis à jour
+     * l'etat de la partie est mis �� jour
      * @param joueur
      */
     private void joueurJoue(Joueur joueur) {
@@ -74,7 +75,7 @@ public class Jeu {
         initialisationAvantDeJouerLeCoup(joueur);
         // on joue le coup
         board = joueur.jouer(board, numeroDuCoup);
-        // on definit l'état de la partie après le coup
+        // on definit l'��tat de la partie apr��s le coup
         etatDeLaPartie = finalisationApresAvoirJouerLecoup(joueur);
     }
 
@@ -86,19 +87,19 @@ public class Jeu {
         System.out.println((Piece.isBlanc(joueur.getCouleur())?"blanc ":"noir ") + "va joue");
         // on renseigne le joueur de l'heure
         joueur.setTempsCourant(Outils.getTime());  
-        // les pions ayant avancé de deux cases étaient soumis à une prise en passant, 
-        // au nouveau tour de jeu ils ne sont plus soumis à cette règle
+        // les pions ayant avanc�� de deux cases ��taient soumis �� une prise en passant, 
+        // au nouveau tour de jeu ils ne sont plus soumis �� cette r��gle
         Regles.initialisationDesPrisesEnPassant(joueur.getCouleur(), board);
     }
 
     /**
-     * après que le joueur ait joué on détermine l'état de la partie
+     * apr��s que le joueur ait jou�� on d��termine l'��tat de la partie
      * @param joueur
      * @return
      */
     private StatutPartie finalisationApresAvoirJouerLecoup(Joueur joueur){
         BoardUtils.montrerLeBoard(board);
-        // si le board retourné est null, c'est que le joueur n'est plus en jeu vu son score impliquant une absence de roi
+        // si le board retourn�� est null, c'est que le joueur n'est plus en jeu vu son score impliquant une absence de roi
         if(board == null)                                           return savoirQuiAGagne(joueur, true);  
         // l'adversaire est il mat?
         if(Regles.isMate(joueur.getCouleurDeLAutreJoueur(), board)) return savoirQuiAGagne(joueur, false);
@@ -127,7 +128,7 @@ public class Jeu {
     }
 
     /**
-     * détermine lorsqu'une partie est terminée, qui a gagné
+     * d��termine lorsqu'une partie est termin��e, qui a gagn��
      * @param joueur
      * @param estMate
      * @return

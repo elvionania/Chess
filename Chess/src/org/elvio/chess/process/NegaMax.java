@@ -1,16 +1,18 @@
 package org.elvio.chess.process;
 
 import java.util.List;
+
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.elements.util.CoupARetenir;
 import org.elvio.chess.elements.pieces.Piece;
 import org.elvio.chess.eval.algo.FonctionEvaluation;
+import org.elvio.chess.time.IGestionDuTemps;
 import org.elvio.chess.time.Temps;
 import org.elvio.chess.util.BoardEvalue;
 import org.elvio.chess.util.BoardUtils;
 
 
-//TODO changer le nom de l interface de IParcourir à IParcourir
+//TODO changer le nom de l interface de IParcourir ������ IParcourir
 public class NegaMax implements IParcourir {
     
     private static StringBuilder chemin = new StringBuilder();
@@ -19,14 +21,14 @@ public class NegaMax implements IParcourir {
 			return new BoardEvalue(board, algoDEvaluation.getEval(board, numeroDuCoup));
 	}
 
-    public BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur){
-        return NegaMax.getBoardEvalueS(profondeur, board, couleur, numeroDuCoup, algoDEvaluation, maxParent, test, tempsDuJoueur);
+    public BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, IGestionDuTemps tempsDuJoueur){
+        return getBoardEvalueS(profondeur, board, couleur, numeroDuCoup, algoDEvaluation, maxParent, test, tempsDuJoueur);
     }
 
     /**
      *
-     * parcours récursif de l'arbre des possibles et sélection du meilleur choix selon le principe du negamax
-     * amélioration des performances via la mise en place de l'élagations des branches des possibles selon le pruning alpha béta
+     * parcours r������cursif de l'arbre des possibles et s������lection du meilleur choix selon le principe du negamax
+     * am������lioration des performances via la mise en place de l'������lagations des branches des possibles selon le pruning alpha b������ta
      * 
      * @param profondeur
      * @param board
@@ -38,7 +40,7 @@ public class NegaMax implements IParcourir {
      * @param tempsDuJoueur
      * @return
      */
-    public static BoardEvalue getBoardEvalueS(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur){
+    public static BoardEvalue getBoardEvalueS(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, IGestionDuTemps tempsDuJoueur){
 		if (profondeur == 0){
 			IntelligenceArtificielle.boardCalcule++;
 			return getEvaluation(board, numeroDuCoup, algoDEvaluation);

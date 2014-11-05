@@ -6,26 +6,37 @@
 
 package org.elvio.chess.time;
 
-import org.elvio.chess.util.Outils;
+import org.elvio.chess.elements.pieces.Piece;
+
 
 /**
  *
  * @author Elvio
  */
-public class GestionDuTemps {
-    private long tempsFinal;
-    private long tempsInitial;
-    private long duree;
-    
-    public boolean cEstLHeure(Temps temps){
-        tempsFinal = Outils.getTime();
-	duree = (tempsFinal-tempsInitial) / 1000;
-	
-        if(temps.getParcelDeTemps() < (duree*20)){
-		return true;
+public class GestionDuTemps extends IGestionDuTemps{
+   
+	public GestionDuTemps(int temps) {
+		super(temps);
 	}
-        
-        return false;
-    }
+
+	@Override
+	void manager() {
+		temps.setTempsCourantEnSeconde(temps.getTempsEnSecondeDeLaPartie() + temps.getDateInitialeDuCoup() - temps.getDateCouranteDuCoup());
+		if(temps.getTempsCourantEnSeconde() < 120){
+			parcelDeTemps = 0;
+		}else{
+			parcelDeTemps = 10;
+			if(Piece.isBlanc(temps.getCouleur()) && temps.getScore() < 0){
+				parcelDeTemps *= 2;
+			}
+			if(!Piece.isBlanc(temps.getCouleur()) && temps.getScore() > 0){
+				parcelDeTemps *= 2;
+			}
+			if(temps.getNbreDeCoup() < 12){
+				parcelDeTemps *= 2;
+			}
+			
+		}
+	}
     
 }

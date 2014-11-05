@@ -15,7 +15,7 @@ import java.util.GregorianCalendar;
 public class Outils {
 
     public static long getTime() {
-        return GregorianCalendar.getInstance().getTime().getTime();
+        return GregorianCalendar.getInstance().getTime().getTime() / 1000;
     }
     
 }

@@ -1,13 +1,7 @@
 package org.elvio.chess.eval.algo;
 
 import org.elvio.chess.elements.Board;
-import org.elvio.chess.elements.pieces.Cavalier;
-import org.elvio.chess.elements.pieces.Dame;
-import org.elvio.chess.elements.pieces.Fou;
 import org.elvio.chess.elements.pieces.Piece;
-import org.elvio.chess.elements.pieces.Pion;
-import org.elvio.chess.elements.pieces.Roi;
-import org.elvio.chess.elements.pieces.Tour;
 import org.elvio.chess.util.BoardUtils;
 
 

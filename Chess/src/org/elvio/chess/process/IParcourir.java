@@ -8,7 +8,7 @@ package org.elvio.chess.process;
 
 import org.elvio.chess.elements.Board;
 import org.elvio.chess.eval.algo.FonctionEvaluation;
-import org.elvio.chess.time.Temps;
+import org.elvio.chess.time.IGestionDuTemps;
 import org.elvio.chess.util.BoardEvalue;
 
 /**
@@ -17,5 +17,5 @@ import org.elvio.chess.util.BoardEvalue;
  */
 interface IParcourir {
 
-    BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, Temps tempsDuJoueur);
+    BoardEvalue getBoardEvalue(int profondeur, Board board, Byte couleur, int numeroDuCoup, FonctionEvaluation algoDEvaluation, Integer maxParent, boolean test, IGestionDuTemps tempsDuJoueur);
 }

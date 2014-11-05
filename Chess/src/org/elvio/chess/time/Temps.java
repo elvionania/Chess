@@ -1,18 +1,15 @@
 package org.elvio.chess.time;
 
-import org.elvio.chess.elements.pieces.Piece;
 
 public class Temps {
 
 	private long tempsEnSecondeDeLaPartie;
 	private long tempsCourantEnSeconde;
-	private long dateInitiale;
-	private long dateCourante;
+	private long dateInitialeDuCoup;
+	private long dateCouranteDuCoup;
 	private int nbreDeCoup;
 	private int score;
 	private byte couleur;
-	
-	private int parcelDeTemps;
 	
 	public Temps (int tempsEnMinute){
 		tempsEnSecondeDeLaPartie = tempsEnMinute*60;
@@ -20,47 +17,65 @@ public class Temps {
 		nbreDeCoup = 0;
 		score = 0;
 	}
-	
-	public void initAvantDeJouer(int score, int nbreDeCoup){
-		this.score = score;
-		this.nbreDeCoup = nbreDeCoup;
-	}
-	
+		
 	public void setTempsCourant(long milliSeconde){
 		tempsCourantEnSeconde = milliSeconde/1000;
 	}
 	
-	public int getParcelDeTemps(){
-		manager();
-		return parcelDeTemps;
-	}
-	
-	public void manager(){
-		tempsCourantEnSeconde = tempsEnSecondeDeLaPartie + dateInitiale - dateCourante;
-		if(tempsCourantEnSeconde < 120){
-			parcelDeTemps = 0;
-		}else{
-			parcelDeTemps = 10;
-			if(Piece.isBlanc(couleur) && score < 0){
-				parcelDeTemps *= 2;
-			}
-			if(!Piece.isBlanc(couleur) && score > 0){
-				parcelDeTemps *= 2;
-			}
-			if(nbreDeCoup < 12){
-				parcelDeTemps *= 2;
-			}
-			
-		}
+	public void setDateInitialeDuCoup(long dateInitiale) {
+		this.dateInitialeDuCoup = dateInitiale/1000;
 	}
 
-	public void setDateInitiale(long dateInitiale) {
-		this.dateInitiale = dateInitiale/1000;
+	public void setDateCouranteDuCoup(long dateCourante) {
+		this.dateCouranteDuCoup = dateCourante/1000;
 	}
 
-	public void setDateCourante(long dateCourante) {
-		this.dateCourante = dateCourante/1000;
+	public long getTempsEnSecondeDeLaPartie() {
+		return tempsEnSecondeDeLaPartie;
 	}
-	
+
+	public void setTempsEnSecondeDeLaPartie(long tempsEnSecondeDeLaPartie) {
+		this.tempsEnSecondeDeLaPartie = tempsEnSecondeDeLaPartie;
+	}
+
+	public long getTempsCourantEnSeconde() {
+		return tempsCourantEnSeconde;
+	}
+
+	public void setTempsCourantEnSeconde(long tempsCourantEnSeconde) {
+		this.tempsCourantEnSeconde = tempsCourantEnSeconde;
+	}
+
+	public int getNbreDeCoup() {
+		return nbreDeCoup;
+	}
+
+	public void setNbreDeCoup(int nbreDeCoup) {
+		this.nbreDeCoup = nbreDeCoup;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public byte getCouleur() {
+		return couleur;
+	}
+
+	public void setCouleur(byte couleur) {
+		this.couleur = couleur;
+	}
+
+	public long getDateInitialeDuCoup() {
+		return dateInitialeDuCoup;
+	}
+
+	public long getDateCouranteDuCoup() {
+		return dateCouranteDuCoup;
+	}	
 	
 }
