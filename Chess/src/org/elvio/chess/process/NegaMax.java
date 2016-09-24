@@ -57,7 +57,7 @@ public class NegaMax implements IParcourir {
 		boolean brancheCoupee = false;
 		Byte piece;
 		EtatDUnBoard etat = null;
-                boolean enTest;
+        boolean enTest;
                 
 		for(int position = 0 ; position < BoardUtils.NBRE_CASES_BOARD ; position++){
 			if(Piece.isMemeCouleur((piece = board.get(position)), couleur)){
@@ -67,6 +67,7 @@ public class NegaMax implements IParcourir {
                                             
                     int max2 = -1000000000;
 					etat = BoardUtils.getBoardApresUnCoup(position, piece, coup, board, etat);
+					// il n'y a qu'un enfant sauf dans le cas d'une promotion de pion
                     for(Board enfant : etat.getBoards()){
                         if(etat.isRoiBlancDevore() || etat.isRoiNoirDevore()){
                             BoardEvalue evaluation = getEvaluation(enfant, numeroDuCoup, algoDEvaluation).clone();
